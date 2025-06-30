@@ -1052,25 +1052,28 @@ function TweenGeneratorUI:CreatePropertyEditor(propertyName, propertyInfo, yPos)
     
     local currentValue = targetObject[propertyName]
     
-    -- Property label with status indicator
+    -- Property label with status indicator (improved readability)
     local propertyLabel = Instance.new("TextLabel")
     propertyLabel.Size = UDim2.new(0.3, -10, 0, 25)
     propertyLabel.Position = UDim2.new(0, 10, 0, yPos)
     propertyLabel.BackgroundTransparency = 1
-    propertyLabel.Text = propertyName .. ":"
-    propertyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    propertyLabel.Text = propertyName:upper() .. ":"
+    propertyLabel.TextColor3 = Color3.fromRGB(220, 240, 255)
+    propertyLabel.TextSize = 14
     propertyLabel.TextXAlignment = Enum.TextXAlignment.Left
+    propertyLabel.Font = Enum.Font.GothamBold
     propertyLabel.Parent = self.propertyFrame
     
-    -- Status indicator
+    -- Modern status indicator
     local statusIndicator = Instance.new("TextLabel")
     statusIndicator.Name = propertyName .. "Status"
-    statusIndicator.Size = UDim2.new(0, 20, 0, 25)
-    statusIndicator.Position = UDim2.new(0.3, -5, 0, yPos)
+    statusIndicator.Size = UDim2.new(0, 25, 0, 25)
+    statusIndicator.Position = UDim2.new(0.3, -10, 0, yPos)
     statusIndicator.BackgroundTransparency = 1
     statusIndicator.Text = "○"
-    statusIndicator.TextColor3 = Color3.fromRGB(100, 100, 100)
-    statusIndicator.TextScaled = true
+    statusIndicator.TextColor3 = Color3.fromRGB(120, 140, 180)
+    statusIndicator.TextSize = 16
+    statusIndicator.Font = Enum.Font.GothamBold
     statusIndicator.Parent = self.propertyFrame
     
     if propertyType == "Vector3" then
@@ -1195,16 +1198,14 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
         btnCorner.Parent = presetBtn
         
         presetBtn.MouseButton1Click:Connect(function()
-            -- Update input fields
-            for j, component in ipairs(inputs) do
-                local input = self.propertyFrame:FindFirstChild(propertyName .. component)
-                if input then
-                    local value = (component == "X" and preset.value.X) or 
-                                  (component == "Y" and preset.value.Y) or 
-                                  (component == "Z" and preset.value.Z)
-                    input.Text = string.format("%.2f", value)
-                end
-            end
+            -- Update input fields properly
+            local xInput = self.propertyFrame:FindFirstChild(propertyName .. "X")
+            local yInput = self.propertyFrame:FindFirstChild(propertyName .. "Y")
+            local zInput = self.propertyFrame:FindFirstChild(propertyName .. "Z")
+            
+            if xInput then xInput.Text = string.format("%.2f", preset.value.X) end
+            if yInput then yInput.Text = string.format("%.2f", preset.value.Y) end
+            if zInput then zInput.Text = string.format("%.2f", preset.value.Z) end
             
             -- Update the property value
             self.endProperties[propertyName] = preset.value
@@ -1441,21 +1442,44 @@ function TweenGeneratorUI:CreateColor3Editor(propertyName, currentValue, yPos)
 end
 
 function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
+    -- Modern number input with better styling
     local input = Instance.new("TextBox")
     input.Name = propertyName .. "Value"
-    input.Size = UDim2.new(0.6, -10, 0, 25)
+    input.Size = UDim2.new(0.6, -10, 0, 30)
     input.Position = UDim2.new(0.3, 0, 0, yPos)
-    input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
     input.BorderSizePixel = 0
-    input.Text = tostring(currentValue)
-    input.TextColor3 = Color3.fromRGB(255, 255, 255)
+    input.Text = string.format("%.3f", currentValue)
+    input.TextColor3 = Color3.fromRGB(200, 220, 255)
+    input.TextSize = 14
+    input.Font = Enum.Font.GothamMedium
+    input.TextXAlignment = Enum.TextXAlignment.Center
     input.Parent = self.propertyFrame
     
+    -- Modern styling
+    local inputCorner = Instance.new("UICorner")
+    inputCorner.CornerRadius = UDim.new(0, 8)
+    inputCorner.Parent = input
+    
+    local inputStroke = Instance.new("UIStroke")
+    inputStroke.Color = Color3.fromRGB(100, 150, 255)
+    inputStroke.Thickness = 1
+    inputStroke.Transparency = 0.8
+    inputStroke.Parent = input
+    
+    -- Focus effects
+    input.Focused:Connect(function()
+        inputStroke.Transparency = 0.4
+        input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+    end)
+    
     input.FocusLost:Connect(function()
+        inputStroke.Transparency = 0.8
+        input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
         self:UpdatePropertyValue(propertyName, "number")
     end)
     
-    return yPos + 30
+    return yPos + 40
 end
 
 function TweenGeneratorUI:UpdatePropertyValue(propertyName, valueType)
@@ -1581,7 +1605,15 @@ function TweenGeneratorUI:SaveOriginalProperties()
     
     self.originalProperties = {}
     for propertyName, _ in pairs(self.endProperties) do
-        self.originalProperties[propertyName] = targetObject[propertyName]
+        -- Only save properties that actually exist on the target object
+        if targetObject[propertyName] ~= nil then
+            local success, value = pcall(function()
+                return targetObject[propertyName]
+            end)
+            if success then
+                self.originalProperties[propertyName] = value
+            end
+        end
     end
 end
 
@@ -1590,7 +1622,10 @@ function TweenGeneratorUI:ResetToOriginal()
     if not targetObject or not self.originalProperties then return end
     
     for propertyName, value in pairs(self.originalProperties) do
-        targetObject[propertyName] = value
+        -- Only reset properties that actually exist on the target object
+        if targetObject[propertyName] ~= nil then
+            targetObject[propertyName] = value
+        end
     end
 end
 
@@ -1657,10 +1692,10 @@ function TweenGeneratorUI:UpdatePropertyStatus(propertyName, isConfigured)
     if statusIndicator then
         if isConfigured then
             statusIndicator.Text = "●"
-            statusIndicator.TextColor3 = Color3.fromRGB(76, 175, 80) -- Green
+            statusIndicator.TextColor3 = Color3.fromRGB(100, 255, 120) -- Bright green
         else
             statusIndicator.Text = "○"
-            statusIndicator.TextColor3 = Color3.fromRGB(100, 100, 100) -- Gray
+            statusIndicator.TextColor3 = Color3.fromRGB(120, 140, 180) -- Muted blue-gray
         end
     end
 end
