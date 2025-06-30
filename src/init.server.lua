@@ -270,22 +270,70 @@ function TweenGeneratorUI.new(widget, plugin)
 end
 
 function TweenGeneratorUI:CreateUI()
-    -- Main frame
+    -- Main frame with modern gradient background
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(1, 0, 1, 0)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(46, 46, 46)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = self.widget
     
-    -- Create scroll frame
+    -- Add gradient background
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
+    }
+    gradient.Rotation = 45
+    gradient.Parent = mainFrame
+    
+    -- Add corner radius
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 12)
+    mainCorner.Parent = mainFrame
+    
+    -- Header with title and glow effect
+    local headerFrame = Instance.new("Frame")
+    headerFrame.Name = "Header"
+    headerFrame.Size = UDim2.new(1, 0, 0, 50)
+    headerFrame.Position = UDim2.new(0, 0, 0, 0)
+    headerFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 40)
+    headerFrame.BorderSizePixel = 0
+    headerFrame.Parent = mainFrame
+    
+    local headerCorner = Instance.new("UICorner")
+    headerCorner.CornerRadius = UDim.new(0, 12)
+    headerCorner.Parent = headerFrame
+    
+    local headerGradient = Instance.new("UIGradient")
+    headerGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 35, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 25, 40))
+    }
+    headerGradient.Rotation = 90
+    headerGradient.Parent = headerFrame
+    
+    -- Title with modern font
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -20, 1, 0)
+    titleLabel.Position = UDim2.new(0, 20, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = "TWEEN GENERATOR PRO"
+    titleLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
+    titleLabel.TextScaled = true
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.Parent = headerFrame
+    
+    -- Create modern scroll frame
     local scrollFrame = Instance.new("ScrollingFrame")
     scrollFrame.Name = "ScrollFrame"
-    scrollFrame.Size = UDim2.new(1, -20, 1, -20)
-    scrollFrame.Position = UDim2.new(0, 10, 0, 10)
+    scrollFrame.Size = UDim2.new(1, -20, 1, -70)
+    scrollFrame.Position = UDim2.new(0, 10, 0, 60)
     scrollFrame.BackgroundTransparency = 1
-    scrollFrame.ScrollBarThickness = 8
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 900)
+    scrollFrame.ScrollBarThickness = 6
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1000)
+    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
     scrollFrame.Parent = mainFrame
     
     -- Create sections
@@ -516,59 +564,226 @@ function TweenGeneratorUI:CreateSection(title, parent, yOffset)
     section.Name = title .. "Section"
     section.Size = UDim2.new(1, -20, 0, 100)
     section.Position = UDim2.new(0, 10, 0, yOffset)
-    section.BackgroundColor3 = Color3.fromRGB(37, 37, 37)
+    section.BackgroundColor3 = Color3.fromRGB(25, 30, 45)
     section.BorderSizePixel = 0
     section.Parent = parent
     
-    -- Add corner radius
+    -- Modern gradient background
+    local sectionGradient = Instance.new("UIGradient")
+    sectionGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 40, 60)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 30, 45)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 25, 40))
+    }
+    sectionGradient.Rotation = 90
+    sectionGradient.Parent = section
+    
+    -- Add corner radius and border
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UDim.new(0, 12)
     corner.Parent = section
     
-    -- Title label
+    -- Subtle border/stroke effect
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(60, 80, 120)
+    stroke.Thickness = 1
+    stroke.Transparency = 0.7
+    stroke.Parent = section
+    
+    -- Modern title with glow effect
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -20, 0, 25)
-    titleLabel.Position = UDim2.new(0, 10, 0, 5)
+    titleLabel.Size = UDim2.new(1, -20, 0, 30)
+    titleLabel.Position = UDim2.new(0, 15, 0, 8)
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextScaled = true
+    titleLabel.Text = title:upper()
+    titleLabel.TextColor3 = Color3.fromRGB(180, 200, 255)
+    titleLabel.TextSize = 14
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Font = Enum.Font.SourceSansBold
+    titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Parent = section
+    
+    -- Add subtle glow to title
+    local titleStroke = Instance.new("UIStroke")
+    titleStroke.Color = Color3.fromRGB(100, 150, 255)
+    titleStroke.Thickness = 0.5
+    titleStroke.Transparency = 0.8
+    titleStroke.Parent = titleLabel
     
     return section
 end
 
-function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, callback, yPos)
+function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, callback, yPos, minValue, maxValue)
+    minValue = minValue or 0
+    maxValue = maxValue or (labelText == "Duration" and 10 or (labelText == "Delay" and 5 or 10))
+    
+    -- Modern label
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.5, -10, 0, 25)
-    label.Position = UDim2.new(0, 10, 0, yPos)
+    label.Size = UDim2.new(1, -20, 0, 20)
+    label.Position = UDim2.new(0, 15, 0, yPos)
     label.BackgroundTransparency = 1
-    label.Text = labelText .. ":"
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Text = labelText:upper()
+    label.TextColor3 = Color3.fromRGB(160, 180, 220)
+    label.TextSize = 12
     label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Font = Enum.Font.Gotham
     label.Parent = parent
     
-    local input = Instance.new("TextBox")
-    input.Size = UDim2.new(0.5, -15, 0, 25)
-    input.Position = UDim2.new(0.5, 5, 0, yPos)
-    input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    input.BorderSizePixel = 0
-    input.Text = tostring(defaultValue)
-    input.TextColor3 = Color3.fromRGB(255, 255, 255)
-    input.Parent = parent
+    -- Container for controls
+    local controlFrame = Instance.new("Frame")
+    controlFrame.Size = UDim2.new(1, -20, 0, 35)
+    controlFrame.Position = UDim2.new(0, 15, 0, yPos + 25)
+    controlFrame.BackgroundTransparency = 1
+    controlFrame.Parent = parent
     
-    input.FocusLost:Connect(function(enterPressed)
-        local value = tonumber(input.Text)
-        if value then
-            callback(value)
-        else
-            input.Text = tostring(defaultValue)
+    -- Modern slider track
+    local sliderTrack = Instance.new("Frame")
+    sliderTrack.Size = UDim2.new(0.6, -10, 0, 6)
+    sliderTrack.Position = UDim2.new(0, 0, 0.5, -3)
+    sliderTrack.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+    sliderTrack.BorderSizePixel = 0
+    sliderTrack.Parent = controlFrame
+    
+    local trackCorner = Instance.new("UICorner")
+    trackCorner.CornerRadius = UDim.new(0, 3)
+    trackCorner.Parent = sliderTrack
+    
+    -- Slider fill (progress indicator)
+    local sliderFill = Instance.new("Frame")
+    sliderFill.Size = UDim2.new((defaultValue - minValue) / (maxValue - minValue), 0, 1, 0)
+    sliderFill.Position = UDim2.new(0, 0, 0, 0)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    sliderFill.BorderSizePixel = 0
+    sliderFill.Parent = sliderTrack
+    
+    local fillCorner = Instance.new("UICorner")
+    fillCorner.CornerRadius = UDim.new(0, 3)
+    fillCorner.Parent = sliderFill
+    
+    -- Add glow to fill
+    local fillGlow = Instance.new("UIStroke")
+    fillGlow.Color = Color3.fromRGB(100, 150, 255)
+    fillGlow.Thickness = 1
+    fillGlow.Transparency = 0.6
+    fillGlow.Parent = sliderFill
+    
+    -- Slider handle
+    local sliderHandle = Instance.new("TextButton")
+    sliderHandle.Size = UDim2.new(0, 16, 0, 16)
+    sliderHandle.Position = UDim2.new((defaultValue - minValue) / (maxValue - minValue), -8, 0.5, -8)
+    sliderHandle.BackgroundColor3 = Color3.fromRGB(150, 180, 255)
+    sliderHandle.BorderSizePixel = 0
+    sliderHandle.Text = ""
+    sliderHandle.Parent = controlFrame
+    
+    local handleCorner = Instance.new("UICorner")
+    handleCorner.CornerRadius = UDim.new(0, 8)
+    handleCorner.Parent = sliderHandle
+    
+    local handleGlow = Instance.new("UIStroke")
+    handleGlow.Color = Color3.fromRGB(150, 180, 255)
+    handleGlow.Thickness = 2
+    handleGlow.Transparency = 0.4
+    handleGlow.Parent = sliderHandle
+    
+    -- Value display
+    local valueDisplay = Instance.new("TextLabel")
+    valueDisplay.Size = UDim2.new(0, 60, 0, 30)
+    valueDisplay.Position = UDim2.new(0.6, 5, 0, 2.5)
+    valueDisplay.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+    valueDisplay.BorderSizePixel = 0
+    valueDisplay.Text = string.format("%.2f", defaultValue)
+    valueDisplay.TextColor3 = Color3.fromRGB(200, 220, 255)
+    valueDisplay.TextSize = 14
+    valueDisplay.Font = Enum.Font.GothamMedium
+    valueDisplay.Parent = controlFrame
+    
+    local displayCorner = Instance.new("UICorner")
+    displayCorner.CornerRadius = UDim.new(0, 6)
+    displayCorner.Parent = valueDisplay
+    
+    -- Preset buttons for common values
+    local presetFrame = Instance.new("Frame")
+    presetFrame.Size = UDim2.new(0.35, -10, 0, 20)
+    presetFrame.Position = UDim2.new(0.65, 10, 0, 40)
+    presetFrame.BackgroundTransparency = 1
+    presetFrame.Parent = controlFrame
+    
+    local presets = {}
+    if labelText == "Duration" then
+        presets = {0.5, 1, 2, 5}
+    elseif labelText == "Delay" then
+        presets = {0, 0.5, 1, 2}
+    else
+        presets = {0, 1, 5, 10}
+    end
+    
+    for i, presetValue in ipairs(presets) do
+        local presetBtn = Instance.new("TextButton")
+        presetBtn.Size = UDim2.new(0.23, 0, 1, 0)
+        presetBtn.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
+        presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        presetBtn.BorderSizePixel = 0
+        presetBtn.Text = tostring(presetValue)
+        presetBtn.TextColor3 = Color3.fromRGB(160, 180, 220)
+        presetBtn.TextSize = 10
+        presetBtn.Font = Enum.Font.Gotham
+        presetBtn.Parent = presetFrame
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.Parent = presetBtn
+        
+        presetBtn.MouseButton1Click:Connect(function()
+            callback(presetValue)
+            self:UpdateSlider(sliderHandle, sliderFill, valueDisplay, presetValue, minValue, maxValue)
+        end)
+        
+        -- Hover effect
+        presetBtn.MouseEnter:Connect(function()
+            presetBtn.BackgroundColor3 = Color3.fromRGB(60, 80, 120)
+        end)
+        
+        presetBtn.MouseLeave:Connect(function()
+            presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        end)
+    end
+    
+    -- Slider functionality
+    local dragging = false
+    local function updateValue(inputObject)
+        if not dragging then return end
+        
+        local relativeX = (inputObject.Position.X - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
+        relativeX = math.clamp(relativeX, 0, 1)
+        
+        local newValue = minValue + (maxValue - minValue) * relativeX
+        newValue = math.round(newValue * 100) / 100 -- Round to 2 decimal places
+        
+        callback(newValue)
+        self:UpdateSlider(sliderHandle, sliderFill, valueDisplay, newValue, minValue, maxValue)
+    end
+    
+    sliderHandle.MouseButton1Down:Connect(function()
+        dragging = true
+    end)
+    
+    game:GetService("UserInputService").InputChanged:Connect(updateValue)
+    
+    game:GetService("UserInputService").InputEnded:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
         end
     end)
     
-    return yPos + 35
+    return yPos + 75
+end
+
+function TweenGeneratorUI:UpdateSlider(handle, fill, display, value, minValue, maxValue)
+    local percent = (value - minValue) / (maxValue - minValue)
+    
+    handle.Position = UDim2.new(percent, -8, 0.5, -8)
+    fill.Size = UDim2.new(percent, 0, 1, 0)
+    display.Text = string.format("%.2f", value)
 end
 
 function TweenGeneratorUI:ConnectEvents()
