@@ -95,26 +95,21 @@ This method works but doesn't support hot reloading or modern development featur
 
 ## Project Structure Explanation
 
-The plugin uses Rojo-compatible file structure:
+The plugin uses a simplified bundled structure:
 
 ```
 TweenGeneratorPro/
-├── src/                          # Source code
-│   ├── init.server.lua          # Plugin entry point (Server Script)
-│   └── UI/                      # UI modules
-│       ├── TweenGeneratorUI.lua # Main UI (ModuleScript)
-│       ├── PropertyHandler.lua  # Property manager (ModuleScript)
-│       ├── CodeExporter.lua     # Code generator (ModuleScript)
-│       └── PresetManager.lua    # Preset handler (ModuleScript)
+├── src/
+│   └── init.server.lua          # Bundled plugin (Server Script with all functionality)
 ├── project.json                 # Rojo configuration
 └── documentation files...
 ```
 
-### File Extensions in Rojo
-
-- `init.server.lua` → Server Script
-- `.lua` → ModuleScript
-- `.client.lua` → LocalScript (not used in this plugin)
+**Bundled Architecture**: All plugin functionality (UI, property handling, code export, presets) is contained in a single `init.server.lua` file. This approach:
+- Simplifies distribution and installation
+- Ensures compatibility with various sync tools
+- Reduces complexity for end users
+- Follows the pattern of successful Roblox plugins
 
 ## Verification
 
@@ -171,7 +166,7 @@ If you want to modify or contribute to the plugin:
 
 ### Development Workflow
 
-1. **Make Changes**: Edit files in `src/` directory
+1. **Make Changes**: Edit the bundled `src/init.server.lua` file
 2. **Hot Reload**: Changes sync automatically to Studio
 3. **Test**: Immediately test changes without restart
 4. **Build**: Use `rojo build` for distribution
@@ -223,7 +218,7 @@ If you want to modify or contribute to the plugin:
 **Solutions**:
 - Check Output window for specific errors
 - Verify file structure matches project.json
-- Ensure all ModuleScript files are present
+- Ensure the bundled init.server.lua file is present and contains all functionality
 
 ### Permission Issues
 
@@ -240,15 +235,12 @@ If you want to modify or contribute to the plugin:
 Your synced project should look like this in Studio:
 
 ```
-ServerStorage (or wherever synced)
-└── TweenGeneratorPro (Plugin)
-    ├── init (Server Script)
-    └── UI (Folder)
-        ├── TweenGeneratorUI (ModuleScript)
-        ├── PropertyHandler (ModuleScript)
-        ├── CodeExporter (ModuleScript)
-        └── PresetManager (ModuleScript)
+ServerStorage
+└── TweenGeneratorPro (Folder)
+    └── init (Server Script) -- Contains all bundled functionality
 ```
+
+The bundled `init` Server Script contains all plugin functionality including UI, property handling, code export, and preset management.
 
 ## Alternative Sync Tools
 

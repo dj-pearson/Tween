@@ -1,17 +1,12 @@
 {
-  "name": "Tween",
+  "name": "TweenGeneratorPro",
   "tree": {
     "$className": "DataModel",
-    "ReplicatedStorage": {
-      "$path": "src/Shared"
-    },
-    "ServerScriptService": {
-      "$path": "src/Server"
-    },
-    "StarterPlayer": {
-      "StarterPlayerScripts": {
-        "$path": "src/Client"
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "TweenGeneratorPro": {
+        "$path": "src"
       }
     }
   }
-}
+} 

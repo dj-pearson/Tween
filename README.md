@@ -66,18 +66,15 @@ A powerful visual tween animation creator for Roblox Studio that allows develope
 
 ```
 TweenGeneratorPro/
-├── src/                          # Source code for Rojo/Argon sync
-│   ├── init.server.lua           # Main plugin entry point
-│   └── UI/                       # UI modules
-│       ├── TweenGeneratorUI.lua  # Main UI controller
-│       ├── PropertyHandler.lua   # Property management
-│       ├── CodeExporter.lua      # Code generation
-│       └── PresetManager.lua     # Preset functionality
+├── src/
+│   └── init.server.lua           # Bundled plugin (all functionality in one file)
 ├── project.json                  # Rojo project configuration
 ├── README.md                     # This file
 ├── INSTALL.md                    # Detailed installation guide
 └── EXAMPLES.md                   # Usage examples
 ```
+
+**Note**: This plugin uses a bundled architecture where all functionality is contained in a single `init.server.lua` file. This makes it easier to distribute and ensures compatibility with various sync tools.
 
 ## Usage
 
@@ -184,7 +181,7 @@ tween:Play()
    ```
 
 2. **Hot Reloading**:
-   - Edit files in `src/` directory
+   - Edit the bundled `src/init.server.lua` file
    - Changes sync automatically to Studio
    - Test immediately without restarting
 
@@ -245,7 +242,7 @@ This plugin is open source and contributions are welcome! Please feel free to:
 
 1. Fork the repository
 2. Set up Rojo/Argon development environment
-3. Make changes in the `src/` directory
+3. Make changes to the bundled `src/init.server.lua` file
 4. Test thoroughly in Studio
 5. Submit a pull request
 
@@ -254,6 +251,12 @@ This plugin is open source and contributions are welcome! Please feel free to:
 This project is provided as-is for educational and development purposes. Feel free to modify and distribute according to your needs.
 
 ## Version History
+
+### v1.2.0
+- Bundled all functionality into single init.server.lua file
+- Updated project.json to match successful plugin patterns
+- Simplified distribution and installation
+- Improved compatibility with various sync tools
 
 ### v1.1.0
 - Added Rojo/Argon sync support

@@ -1,0 +1,31 @@
+{
+  "name": "TweenProject",
+  "tree": {
+    "$className": "DataModel",
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "Tween": {
+        "$className": "Folder",
+        "Client": {
+          "$path": "src/Client"
+        },
+        "Server": {
+          "$path": "src/Server"
+        },
+        "Shared": {
+          "$path": "src/Shared"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Plugins": {
+        "$className": "Folder",
+        "TweenGeneratorPro": {
+          "$className": "Plugin",
+          "$path": "src/TweenGeneratorPro.server.lua"
+        }
+      }
+    }
+  }
+} 
