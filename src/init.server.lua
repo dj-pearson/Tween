@@ -908,24 +908,139 @@ end
 function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
     local inputs = {"X", "Y", "Z"}
     local values = {currentValue.X, currentValue.Y, currentValue.Z}
+    local colors = {
+        Color3.fromRGB(255, 100, 100), -- Red for X
+        Color3.fromRGB(100, 255, 100), -- Green for Y  
+        Color3.fromRGB(100, 150, 255)  -- Blue for Z
+    }
     
+    -- Create input fields with modern styling
     for i, component in ipairs(inputs) do
+        -- Component label
+        local componentLabel = Instance.new("TextLabel")
+        componentLabel.Size = UDim2.new(0.2, -5, 0, 12)
+        componentLabel.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos - 15)
+        componentLabel.BackgroundTransparency = 1
+        componentLabel.Text = component
+        componentLabel.TextColor3 = colors[i]
+        componentLabel.TextSize = 11
+        componentLabel.TextXAlignment = Enum.TextXAlignment.Center
+        componentLabel.Font = Enum.Font.GothamBold
+        componentLabel.Parent = self.propertyFrame
+        
+        -- Modern input field
         local input = Instance.new("TextBox")
         input.Name = propertyName .. component
         input.Size = UDim2.new(0.2, -5, 0, 25)
         input.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos)
-        input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
         input.BorderSizePixel = 0
-        input.Text = string.format("%.3f", values[i])
-        input.TextColor3 = Color3.fromRGB(255, 255, 255)
+        input.Text = string.format("%.2f", values[i])
+        input.TextColor3 = Color3.fromRGB(200, 220, 255)
+        input.TextSize = 12
+        input.Font = Enum.Font.GothamMedium
+        input.TextXAlignment = Enum.TextXAlignment.Center
         input.Parent = self.propertyFrame
         
+        -- Modern styling
+        local inputCorner = Instance.new("UICorner")
+        inputCorner.CornerRadius = UDim.new(0, 6)
+        inputCorner.Parent = input
+        
+        local inputStroke = Instance.new("UIStroke")
+        inputStroke.Color = colors[i]
+        inputStroke.Thickness = 1
+        inputStroke.Transparency = 0.8
+        inputStroke.Parent = input
+        
+        -- Focus effects
+        input.Focused:Connect(function()
+            inputStroke.Transparency = 0.4
+            input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+        end)
+        
         input.FocusLost:Connect(function()
+            inputStroke.Transparency = 0.8
+            input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
             self:UpdatePropertyValue(propertyName, "Vector3")
         end)
     end
     
-    return yPos + 30
+    -- Add preset buttons
+    local presetFrame = Instance.new("Frame")
+    presetFrame.Size = UDim2.new(0.6, -10, 0, 20)
+    presetFrame.Position = UDim2.new(0.3, 0, 0, yPos + 30)
+    presetFrame.BackgroundTransparency = 1
+    presetFrame.Parent = self.propertyFrame
+    
+    local presets = {}
+    if propertyName == "Position" then
+        presets = {
+            {name = "Origin", value = Vector3.new(0, 0, 0)},
+            {name = "Up", value = Vector3.new(0, 10, 0)},
+            {name = "Forward", value = Vector3.new(0, 0, 10)},
+            {name = "Right", value = Vector3.new(10, 0, 0)}
+        }
+    elseif propertyName == "Size" then
+        presets = {
+            {name = "Small", value = Vector3.new(1, 1, 1)},
+            {name = "Medium", value = Vector3.new(4, 4, 4)},
+            {name = "Large", value = Vector3.new(8, 8, 8)},
+            {name = "Huge", value = Vector3.new(16, 16, 16)}
+        }
+    else -- Rotation
+        presets = {
+            {name = "0°", value = Vector3.new(0, 0, 0)},
+            {name = "90°", value = Vector3.new(0, 90, 0)},
+            {name = "180°", value = Vector3.new(0, 180, 0)},
+            {name = "270°", value = Vector3.new(0, 270, 0)}
+        }
+    end
+    
+    for i, preset in ipairs(presets) do
+        local presetBtn = Instance.new("TextButton")
+        presetBtn.Size = UDim2.new(0.23, 0, 1, 0)
+        presetBtn.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
+        presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        presetBtn.BorderSizePixel = 0
+        presetBtn.Text = preset.name
+        presetBtn.TextColor3 = Color3.fromRGB(160, 180, 220)
+        presetBtn.TextSize = 9
+        presetBtn.Font = Enum.Font.Gotham
+        presetBtn.Parent = presetFrame
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.Parent = presetBtn
+        
+        presetBtn.MouseButton1Click:Connect(function()
+            -- Update input fields
+            for j, component in ipairs(inputs) do
+                local input = self.propertyFrame:FindFirstChild(propertyName .. component)
+                if input then
+                    local value = (component == "X" and preset.value.X) or 
+                                  (component == "Y" and preset.value.Y) or 
+                                  (component == "Z" and preset.value.Z)
+                    input.Text = string.format("%.2f", value)
+                end
+            end
+            
+            -- Update the property value
+            self.endProperties[propertyName] = preset.value
+            self:UpdatePropertyStatus(propertyName, true)
+        end)
+        
+        -- Hover effects
+        presetBtn.MouseEnter:Connect(function()
+            presetBtn.BackgroundColor3 = Color3.fromRGB(60, 80, 120)
+        end)
+        
+        presetBtn.MouseLeave:Connect(function()
+            presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        end)
+    end
+    
+    return yPos + 55
 end
 
 function TweenGeneratorUI:CreateUDim2Editor(propertyName, currentValue, yPos)
