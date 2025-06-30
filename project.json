@@ -15,17 +15,11 @@
         "Shared": {
           "$path": "src/Shared"
         }
-      }
-    },
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "Plugins": {
-        "$className": "Folder",
-        "TweenGeneratorPro": {
-          "$className": "Plugin",
-          "$path": "src/TweenGeneratorPro.server.lua"
-        }
+      },
+      "TweenGeneratorPro": {
+        "$className": "Plugin",
+        "$path": "src"
       }
     }
   }
-} 
+}

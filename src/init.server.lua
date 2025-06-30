@@ -54,6 +54,26 @@ function PropertyHandler.GetTweenableProperties(object)
     
     local className = object.ClassName
     
+    -- Model objects - use PrimaryPart or first BasePart
+    if className == "Model" then
+        local targetPart = object.PrimaryPart
+        if not targetPart then
+            -- Find first BasePart in the model
+            for _, child in pairs(object:GetChildren()) do
+                if child:IsA("BasePart") then
+                    targetPart = child
+                    break
+                end
+            end
+        end
+        
+        if targetPart then
+            return PART_PROPERTIES
+        else
+            return {} -- No parts found in model
+        end
+    end
+    
     -- Part-like objects
     if className == "Part" or className == "WedgePart" or className == "MeshPart" or object:IsA("BasePart") then
         return PART_PROPERTIES
@@ -447,7 +467,7 @@ function TweenGeneratorUI:CreateExportSection(parent)
     exportButton.Position = UDim2.new(0, 10, 0, 30)
     exportButton.BackgroundColor3 = Color3.fromRGB(255, 152, 0)
     exportButton.BorderSizePixel = 0
-    exportButton.Text = "Copy Code to Clipboard"
+    exportButton.Text = "Export Code to Clipboard"
     exportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     exportButton.Parent = section
     
@@ -463,50 +483,56 @@ function TweenGeneratorUI:CreatePresetSection(parent)
     
     -- Preset name input
     local presetNameInput = Instance.new("TextBox")
-    presetNameInput.Size = UDim2.new(0.6, -10, 0, 30)
+    presetNameInput.Size = UDim2.new(1, -120, 0, 30)
     presetNameInput.Position = UDim2.new(0, 10, 0, 30)
-    presetNameInput.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    presetNameInput.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     presetNameInput.BorderSizePixel = 0
-    presetNameInput.Text = "My Preset"
+    presetNameInput.Text = "New Preset"
     presetNameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    presetNameInput.PlaceholderText = "Preset name..."
     presetNameInput.Parent = section
     
     -- Save preset button
     local savePresetButton = Instance.new("TextButton")
-    savePresetButton.Size = UDim2.new(0.4, -15, 0, 30)
-    savePresetButton.Position = UDim2.new(0.6, 5, 0, 30)
-    savePresetButton.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+    savePresetButton.Size = UDim2.new(0, 100, 0, 30)
+    savePresetButton.Position = UDim2.new(1, -110, 0, 30)
+    savePresetButton.BackgroundColor3 = Color3.fromRGB(103, 58, 183)
     savePresetButton.BorderSizePixel = 0
-    savePresetButton.Text = "Save Preset"
+    savePresetButton.Text = "Save"
     savePresetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     savePresetButton.Parent = section
     
     savePresetButton.MouseButton1Click:Connect(function()
-        if presetNameInput.Text ~= "" then
-            self:SavePreset(presetNameInput.Text)
+        local presetName = presetNameInput.Text
+        if presetName and presetName ~= "" then
+            self:SavePreset(presetName)
         end
     end)
     
     section.Size = UDim2.new(1, -20, 0, 80)
 end
 
-function TweenGeneratorUI:CreateSection(title, parent, yPosition)
+function TweenGeneratorUI:CreateSection(title, parent, yOffset)
     local section = Instance.new("Frame")
-    section.Name = title
+    section.Name = title .. "Section"
     section.Size = UDim2.new(1, -20, 0, 100)
-    section.Position = UDim2.new(0, 10, 0, yPosition)
-    section.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    section.Position = UDim2.new(0, 10, 0, yOffset)
+    section.BackgroundColor3 = Color3.fromRGB(37, 37, 37)
     section.BorderSizePixel = 0
     section.Parent = parent
     
-    -- Section title
+    -- Add corner radius
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = section
+    
+    -- Title label
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 25)
-    titleLabel.Position = UDim2.new(0, 10, 0, 0)
+    titleLabel.Position = UDim2.new(0, 10, 0, 5)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextScaled = true
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Font = Enum.Font.SourceSansBold
     titleLabel.Parent = section
@@ -514,15 +540,15 @@ function TweenGeneratorUI:CreateSection(title, parent, yPosition)
     return section
 end
 
-function TweenGeneratorUI:CreateNumberInput(parent, label, defaultValue, callback, yPos)
-    local labelObj = Instance.new("TextLabel")
-    labelObj.Size = UDim2.new(0.5, -10, 0, 25)
-    labelObj.Position = UDim2.new(0, 10, 0, yPos)
-    labelObj.BackgroundTransparency = 1
-    labelObj.Text = label .. ":"
-    labelObj.TextColor3 = Color3.fromRGB(255, 255, 255)
-    labelObj.TextXAlignment = Enum.TextXAlignment.Left
-    labelObj.Parent = parent
+function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, callback, yPos)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.5, -10, 0, 25)
+    label.Position = UDim2.new(0, 10, 0, yPos)
+    label.BackgroundTransparency = 1
+    label.Text = labelText .. ":"
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = parent
     
     local input = Instance.new("TextBox")
     input.Size = UDim2.new(0.5, -15, 0, 25)
@@ -533,7 +559,7 @@ function TweenGeneratorUI:CreateNumberInput(parent, label, defaultValue, callbac
     input.TextColor3 = Color3.fromRGB(255, 255, 255)
     input.Parent = parent
     
-    input.FocusLost:Connect(function()
+    input.FocusLost:Connect(function(enterPressed)
         local value = tonumber(input.Text)
         if value then
             callback(value)
@@ -546,155 +572,138 @@ function TweenGeneratorUI:CreateNumberInput(parent, label, defaultValue, callbac
 end
 
 function TweenGeneratorUI:ConnectEvents()
+    -- Auto-refresh selection
     Selection.SelectionChanged:Connect(function()
         self:RefreshSelectedObject()
     end)
 end
 
+function TweenGeneratorUI:GetTargetObject()
+    if not self.selectedObject then return nil end
+    
+    if self.selectedObject.ClassName == "Model" then
+        local targetPart = self.selectedObject.PrimaryPart
+        if not targetPart then
+            -- Find first BasePart in the model
+            for _, child in pairs(self.selectedObject:GetChildren()) do
+                if child:IsA("BasePart") then
+                    targetPart = child
+                    break
+                end
+            end
+        end
+        return targetPart
+    else
+        return self.selectedObject
+    end
+end
+
 function TweenGeneratorUI:RefreshSelectedObject()
-    local selected = Selection:Get()
-    if #selected > 0 then
-        self.selectedObject = selected[1]
-        self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (" .. self.selectedObject.ClassName .. ")"
-        self:UpdatePropertyInputs()
+    local selection = Selection:Get()
+    
+    if #selection > 0 then
+        self.selectedObject = selection[1]
+        local targetObject = self:GetTargetObject()
+        
+        if self.selectedObject.ClassName == "Model" then
+            if targetObject then
+                self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (Model) → " .. targetObject.Name .. " (" .. targetObject.ClassName .. ")"
+            else
+                self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (Model) → No parts found!"
+            end
+        else
+            self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (" .. self.selectedObject.ClassName .. ")"
+        end
+        
+        self:RefreshPropertyEditor()
     else
         self.selectedObject = nil
         self.objectInfoLabel.Text = "No object selected"
-        self:ClearPropertyInputs()
+        self:ClearPropertyEditor()
     end
 end
 
-function TweenGeneratorUI:UpdatePropertyInputs()
+function TweenGeneratorUI:RefreshPropertyEditor()
+    self:ClearPropertyEditor()
+    
     if not self.selectedObject then return end
     
-    self:ClearPropertyInputs()
-    
     local properties = PropertyHandler.GetTweenableProperties(self.selectedObject)
-    local yPos = 10
+    local yPos = 0
     
     for propertyName, propertyInfo in pairs(properties) do
-        yPos = self:CreatePropertyInput(propertyName, propertyInfo, yPos)
+        yPos = self:CreatePropertyEditor(propertyName, propertyInfo, yPos)
     end
     
+    -- Update frame size
     self.propertyFrame.Size = UDim2.new(1, -20, 0, yPos)
-    
-    -- Auto-populate current values
-    self:PopulateCurrentValues()
 end
 
-function TweenGeneratorUI:ClearPropertyInputs()
+function TweenGeneratorUI:ClearPropertyEditor()
     for _, child in pairs(self.propertyFrame:GetChildren()) do
         child:Destroy()
     end
+    self.endProperties = {}
 end
 
-function TweenGeneratorUI:PopulateCurrentValues()
-    if not self.selectedObject then return end
+function TweenGeneratorUI:CreatePropertyEditor(propertyName, propertyInfo, yPos)
+    local propertyType = propertyInfo.type
+    local targetObject = self:GetTargetObject()
     
-    local properties = PropertyHandler.GetTweenableProperties(self.selectedObject)
-    
-    for propertyName, propertyInfo in pairs(properties) do
-        local currentValue = self.selectedObject[propertyName]
-        if currentValue then
-            self:SetPropertyInputValue(propertyName, propertyInfo.type, currentValue)
-        end
-    end
-end
-
-function TweenGeneratorUI:SetPropertyInputValue(propertyName, valueType, value)
-    if valueType == "Vector3" then
-        local xInput = self.propertyFrame:FindFirstChild(propertyName .. "X")
-        local yInput = self.propertyFrame:FindFirstChild(propertyName .. "Y")
-        local zInput = self.propertyFrame:FindFirstChild(propertyName .. "Z")
-        if xInput then xInput.Text = string.format("%.3f", value.X) end
-        if yInput then yInput.Text = string.format("%.3f", value.Y) end
-        if zInput then zInput.Text = string.format("%.3f", value.Z) end
-    elseif valueType == "UDim2" then
-        local scaleXInput = self.propertyFrame:FindFirstChild(propertyName .. "ScaleX")
-        local offsetXInput = self.propertyFrame:FindFirstChild(propertyName .. "OffsetX")
-        local scaleYInput = self.propertyFrame:FindFirstChild(propertyName .. "ScaleY")
-        local offsetYInput = self.propertyFrame:FindFirstChild(propertyName .. "OffsetY")
-        if scaleXInput then scaleXInput.Text = string.format("%.3f", value.X.Scale) end
-        if offsetXInput then offsetXInput.Text = tostring(value.X.Offset) end
-        if scaleYInput then scaleYInput.Text = string.format("%.3f", value.Y.Scale) end
-        if offsetYInput then offsetYInput.Text = tostring(value.Y.Offset) end
-    elseif valueType == "Color3" then
-        local rInput = self.propertyFrame:FindFirstChild(propertyName .. "R")
-        local gInput = self.propertyFrame:FindFirstChild(propertyName .. "G")
-        local bInput = self.propertyFrame:FindFirstChild(propertyName .. "B")
-        if rInput then rInput.Text = tostring(math.floor(value.R * 255 + 0.5)) end
-        if gInput then gInput.Text = tostring(math.floor(value.G * 255 + 0.5)) end
-        if bInput then bInput.Text = tostring(math.floor(value.B * 255 + 0.5)) end
-    elseif valueType == "number" then
-        local valueInput = self.propertyFrame:FindFirstChild(propertyName .. "Value")
-        if valueInput then valueInput.Text = string.format("%.3f", value) end
+    if not targetObject then
+        return yPos -- Skip if no valid target object
     end
     
-    -- Store the current value and update status
-    if not self.endProperties then self.endProperties = {} end
-    self.endProperties[propertyName] = value
-    self:UpdatePropertyStatus(propertyName, true)
-end
-
-function TweenGeneratorUI:CreatePropertyInput(propertyName, propertyInfo, yPos)
+    local currentValue = targetObject[propertyName]
+    
     -- Property label with status indicator
     local propertyLabel = Instance.new("TextLabel")
-    propertyLabel.Size = UDim2.new(1, -30, 0, 20)
-    propertyLabel.Position = UDim2.new(0, 0, 0, yPos)
+    propertyLabel.Size = UDim2.new(0.3, -10, 0, 25)
+    propertyLabel.Position = UDim2.new(0, 10, 0, yPos)
     propertyLabel.BackgroundTransparency = 1
-    propertyLabel.Text = propertyName
+    propertyLabel.Text = propertyName .. ":"
     propertyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     propertyLabel.TextXAlignment = Enum.TextXAlignment.Left
-    propertyLabel.Font = Enum.Font.SourceSansBold
     propertyLabel.Parent = self.propertyFrame
     
     -- Status indicator
     local statusIndicator = Instance.new("TextLabel")
     statusIndicator.Name = propertyName .. "Status"
-    statusIndicator.Size = UDim2.new(0, 20, 0, 20)
-    statusIndicator.Position = UDim2.new(1, -25, 0, yPos)
+    statusIndicator.Size = UDim2.new(0, 20, 0, 25)
+    statusIndicator.Position = UDim2.new(0.3, -5, 0, yPos)
     statusIndicator.BackgroundTransparency = 1
     statusIndicator.Text = "○"
     statusIndicator.TextColor3 = Color3.fromRGB(100, 100, 100)
-    statusIndicator.TextXAlignment = Enum.TextXAlignment.Center
-    statusIndicator.Font = Enum.Font.SourceSansBold
+    statusIndicator.TextScaled = true
     statusIndicator.Parent = self.propertyFrame
     
-    yPos = yPos + 25
-    
-    -- Create simple input based on property type
-    if propertyInfo.type == "Vector3" then
-        yPos = self:CreateVector3Input(propertyName, yPos)
-    elseif propertyInfo.type == "UDim2" then
-        yPos = self:CreateUDim2Input(propertyName, yPos)
-    elseif propertyInfo.type == "Color3" then
-        yPos = self:CreateColor3Input(propertyName, yPos)
-    elseif propertyInfo.type == "number" then
-        yPos = self:CreateSingleNumberInput(propertyName, yPos)
+    if propertyType == "Vector3" then
+        yPos = self:CreateVector3Editor(propertyName, currentValue, yPos)
+    elseif propertyType == "UDim2" then
+        yPos = self:CreateUDim2Editor(propertyName, currentValue, yPos)
+    elseif propertyType == "Color3" then
+        yPos = self:CreateColor3Editor(propertyName, currentValue, yPos)
+    elseif propertyType == "number" then
+        yPos = self:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
     end
     
-    return yPos + 10
+    return yPos + 10 -- Extra spacing between properties
 end
 
-function TweenGeneratorUI:CreateVector3Input(propertyName, yPos)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 25)
-    container.Position = UDim2.new(0, 0, 0, yPos)
-    container.BackgroundTransparency = 1
-    container.Parent = self.propertyFrame
+function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
+    local inputs = {"X", "Y", "Z"}
+    local values = {currentValue.X, currentValue.Y, currentValue.Z}
     
-    -- X, Y, Z inputs
-    for i, axis in ipairs({"X", "Y", "Z"}) do
+    for i, component in ipairs(inputs) do
         local input = Instance.new("TextBox")
-        input.Name = propertyName .. axis
-        input.Size = UDim2.new(0.3, -5, 1, 0)
-        input.Position = UDim2.new((i-1) * 0.33, (i-1) * 5, 0, 0)
+        input.Name = propertyName .. component
+        input.Size = UDim2.new(0.2, -5, 0, 25)
+        input.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos)
         input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         input.BorderSizePixel = 0
-        input.Text = ""
+        input.Text = string.format("%.3f", values[i])
         input.TextColor3 = Color3.fromRGB(255, 255, 255)
-        input.PlaceholderText = axis .. " (e.g. 0)"
-        input.Parent = container
+        input.Parent = self.propertyFrame
         
         input.FocusLost:Connect(function()
             self:UpdatePropertyValue(propertyName, "Vector3")
@@ -704,25 +713,20 @@ function TweenGeneratorUI:CreateVector3Input(propertyName, yPos)
     return yPos + 30
 end
 
-function TweenGeneratorUI:CreateUDim2Input(propertyName, yPos)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 25)
-    container.Position = UDim2.new(0, 0, 0, yPos)
-    container.BackgroundTransparency = 1
-    container.Parent = self.propertyFrame
+function TweenGeneratorUI:CreateUDim2Editor(propertyName, currentValue, yPos)
+    local inputs = {"ScaleX", "OffsetX", "ScaleY", "OffsetY"}
+    local values = {currentValue.X.Scale, currentValue.X.Offset, currentValue.Y.Scale, currentValue.Y.Offset}
     
-    -- Scale X, Offset X, Scale Y, Offset Y inputs
-    for i, component in ipairs({"ScaleX", "OffsetX", "ScaleY", "OffsetY"}) do
+    for i, component in ipairs(inputs) do
         local input = Instance.new("TextBox")
         input.Name = propertyName .. component
-        input.Size = UDim2.new(0.24, -2, 1, 0)
-        input.Position = UDim2.new((i-1) * 0.25, (i-1) * 2, 0, 0)
+        input.Size = UDim2.new(0.15, -5, 0, 25)
+        input.Position = UDim2.new(0.3 + (i-1) * 0.17, 0, 0, yPos)
         input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         input.BorderSizePixel = 0
-        input.Text = ""
+        input.Text = tostring(values[i])
         input.TextColor3 = Color3.fromRGB(255, 255, 255)
-        input.PlaceholderText = component
-        input.Parent = container
+        input.Parent = self.propertyFrame
         
         input.FocusLost:Connect(function()
             self:UpdatePropertyValue(propertyName, "UDim2")
@@ -732,25 +736,24 @@ function TweenGeneratorUI:CreateUDim2Input(propertyName, yPos)
     return yPos + 30
 end
 
-function TweenGeneratorUI:CreateColor3Input(propertyName, yPos)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 25)
-    container.Position = UDim2.new(0, 0, 0, yPos)
-    container.BackgroundTransparency = 1
-    container.Parent = self.propertyFrame
+function TweenGeneratorUI:CreateColor3Editor(propertyName, currentValue, yPos)
+    local inputs = {"R", "G", "B"}
+    local values = {
+        math.floor(currentValue.R * 255 + 0.5),
+        math.floor(currentValue.G * 255 + 0.5),
+        math.floor(currentValue.B * 255 + 0.5)
+    }
     
-    -- R, G, B inputs
-    for i, channel in ipairs({"R", "G", "B"}) do
+    for i, component in ipairs(inputs) do
         local input = Instance.new("TextBox")
-        input.Name = propertyName .. channel
-        input.Size = UDim2.new(0.3, -5, 1, 0)
-        input.Position = UDim2.new((i-1) * 0.33, (i-1) * 5, 0, 0)
+        input.Name = propertyName .. component
+        input.Size = UDim2.new(0.2, -5, 0, 25)
+        input.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos)
         input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         input.BorderSizePixel = 0
-        input.Text = ""
+        input.Text = tostring(values[i])
         input.TextColor3 = Color3.fromRGB(255, 255, 255)
-        input.PlaceholderText = channel .. " (0-255)"
-        input.Parent = container
+        input.Parent = self.propertyFrame
         
         input.FocusLost:Connect(function()
             self:UpdatePropertyValue(propertyName, "Color3")
@@ -760,16 +763,15 @@ function TweenGeneratorUI:CreateColor3Input(propertyName, yPos)
     return yPos + 30
 end
 
-function TweenGeneratorUI:CreateSingleNumberInput(propertyName, yPos)
+function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
     local input = Instance.new("TextBox")
     input.Name = propertyName .. "Value"
-    input.Size = UDim2.new(1, 0, 0, 25)
-    input.Position = UDim2.new(0, 0, 0, yPos)
+    input.Size = UDim2.new(0.6, -10, 0, 25)
+    input.Position = UDim2.new(0.3, 0, 0, yPos)
     input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     input.BorderSizePixel = 0
-    input.Text = ""
+    input.Text = tostring(currentValue)
     input.TextColor3 = Color3.fromRGB(255, 255, 255)
-    input.PlaceholderText = "Value (e.g. 0.5)"
     input.Parent = self.propertyFrame
     
     input.FocusLost:Connect(function()
@@ -780,23 +782,21 @@ function TweenGeneratorUI:CreateSingleNumberInput(propertyName, yPos)
 end
 
 function TweenGeneratorUI:UpdatePropertyValue(propertyName, valueType)
-    if not self.endProperties then self.endProperties = {} end
-    
     local value
+    
     if valueType == "Vector3" then
         local xInput = self.propertyFrame:FindFirstChild(propertyName .. "X")
         local yInput = self.propertyFrame:FindFirstChild(propertyName .. "Y")
         local zInput = self.propertyFrame:FindFirstChild(propertyName .. "Z")
         
-        local x = tonumber(xInput and xInput.Text) 
-        local y = tonumber(yInput and yInput.Text) 
-        local z = tonumber(zInput and zInput.Text) 
+        local x = tonumber(xInput and xInput.Text)
+        local y = tonumber(yInput and yInput.Text)
+        local z = tonumber(zInput and zInput.Text)
         
-        -- Only create value if all components are valid numbers
         if x and y and z then
             value = Vector3.new(x, y, z)
         else
-            return -- Don't update if invalid
+            return
         end
     elseif valueType == "UDim2" then
         local scaleXInput = self.propertyFrame:FindFirstChild(propertyName .. "ScaleX")
@@ -855,6 +855,12 @@ function TweenGeneratorUI:PreviewTween()
         return
     end
     
+    local targetObject = self:GetTargetObject()
+    if not targetObject then
+        warn("No valid part found to tween in the selected object")
+        return
+    end
+    
     self:StopPreview()
     self:SaveOriginalProperties()
     
@@ -873,7 +879,7 @@ function TweenGeneratorUI:PreviewTween()
     end
     
     if next(goals) then
-        self.currentTween = TweenService:Create(self.selectedObject, tweenInfo, goals)
+        self.currentTween = TweenService:Create(targetObject, tweenInfo, goals)
         self.currentTween:Play()
         
         -- Auto-reset after completion
@@ -893,19 +899,21 @@ function TweenGeneratorUI:StopPreview()
 end
 
 function TweenGeneratorUI:SaveOriginalProperties()
-    if not self.selectedObject then return end
+    local targetObject = self:GetTargetObject()
+    if not targetObject then return end
     
     self.originalProperties = {}
     for propertyName, _ in pairs(self.endProperties) do
-        self.originalProperties[propertyName] = self.selectedObject[propertyName]
+        self.originalProperties[propertyName] = targetObject[propertyName]
     end
 end
 
 function TweenGeneratorUI:ResetToOriginal()
-    if not self.selectedObject or not self.originalProperties then return end
+    local targetObject = self:GetTargetObject()
+    if not targetObject or not self.originalProperties then return end
     
     for propertyName, value in pairs(self.originalProperties) do
-        self.selectedObject[propertyName] = value
+        targetObject[propertyName] = value
     end
 end
 
@@ -915,13 +923,19 @@ function TweenGeneratorUI:ExportCode()
         return
     end
     
+    local targetObject = self:GetTargetObject()
+    if not targetObject then
+        warn("No valid part found to tween in the selected object")
+        return
+    end
+    
     if not self.endProperties or not next(self.endProperties) then
         warn("No properties configured for tweening. Please set some target values first.")
         return
     end
     
     local code = CodeExporter.GenerateCode(
-        self.selectedObject,
+        targetObject,
         self.duration,
         self.easingStyle,
         self.easingDirection,
@@ -945,7 +959,11 @@ function TweenGeneratorUI:ExportCode()
     end
     
     -- Provide user feedback
-    print("Generated tween for: " .. self.selectedObject.Name)
+    if self.selectedObject.ClassName == "Model" then
+        print("Generated tween for: " .. self.selectedObject.Name .. " (Model) → " .. targetObject.Name .. " (" .. targetObject.ClassName .. ")")
+    else
+        print("Generated tween for: " .. self.selectedObject.Name)
+    end
     print("Properties tweened: " .. table.concat(self:GetPropertyNames(), ", "))
 end
 
