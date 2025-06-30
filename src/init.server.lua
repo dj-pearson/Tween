@@ -332,7 +332,7 @@ function TweenGeneratorUI:CreateUI()
     scrollFrame.Position = UDim2.new(0, 10, 0, 60)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.ScrollBarThickness = 6
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1000)
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1400)
     scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
     scrollFrame.Parent = mainFrame
     
@@ -352,26 +352,85 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
     local section = self:CreateSection("Object Selection", parent, 0)
     
     -- Object info label
+    -- Modern object info display
+    local infoContainer = Instance.new("Frame")
+    infoContainer.Size = UDim2.new(1, -150, 0, 35)
+    infoContainer.Position = UDim2.new(0, 15, 0, 27.5)
+    infoContainer.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+    infoContainer.BorderSizePixel = 0
+    infoContainer.Parent = section
+    
+    local infoCorner = Instance.new("UICorner")
+    infoCorner.CornerRadius = UDim.new(0, 8)
+    infoCorner.Parent = infoContainer
+    
+    local infoStroke = Instance.new("UIStroke")
+    infoStroke.Color = Color3.fromRGB(80, 120, 200)
+    infoStroke.Thickness = 1
+    infoStroke.Transparency = 0.8
+    infoStroke.Parent = infoContainer
+    
     self.objectInfoLabel = Instance.new("TextLabel")
-    self.objectInfoLabel.Size = UDim2.new(1, -120, 0, 30)
-    self.objectInfoLabel.Position = UDim2.new(0, 10, 0, 30)
+    self.objectInfoLabel.Size = UDim2.new(1, -20, 1, 0)
+    self.objectInfoLabel.Position = UDim2.new(0, 10, 0, 0)
     self.objectInfoLabel.BackgroundTransparency = 1
     self.objectInfoLabel.Text = "No object selected"
-    self.objectInfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    self.objectInfoLabel.TextColor3 = Color3.fromRGB(180, 200, 255)
+    self.objectInfoLabel.TextSize = 12
     self.objectInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
-    self.objectInfoLabel.Parent = section
+    self.objectInfoLabel.Font = Enum.Font.GothamMedium
+    self.objectInfoLabel.Parent = infoContainer
     
-    -- Refresh button
+    -- Modern Refresh button
     local refreshButton = Instance.new("TextButton")
-    refreshButton.Size = UDim2.new(0, 100, 0, 30)
-    refreshButton.Position = UDim2.new(1, -110, 0, 30)
-    refreshButton.BackgroundColor3 = Color3.fromRGB(0, 162, 255)
+    refreshButton.Size = UDim2.new(0, 120, 0, 35)
+    refreshButton.Position = UDim2.new(1, -130, 0, 27.5)
+    refreshButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     refreshButton.BorderSizePixel = 0
-    refreshButton.Text = "Refresh"
+    refreshButton.Text = "🔄 REFRESH"
     refreshButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    refreshButton.TextSize = 12
+    refreshButton.Font = Enum.Font.GothamBold
     refreshButton.Parent = section
     
+    -- Modern styling
+    local refreshCorner = Instance.new("UICorner")
+    refreshCorner.CornerRadius = UDim.new(0, 8)
+    refreshCorner.Parent = refreshButton
+    
+    local refreshGradient = Instance.new("UIGradient")
+    refreshGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 170, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255))
+    }
+    refreshGradient.Rotation = 90
+    refreshGradient.Parent = refreshButton
+    
+    local refreshGlow = Instance.new("UIStroke")
+    refreshGlow.Color = Color3.fromRGB(100, 180, 255)
+    refreshGlow.Thickness = 1.5
+    refreshGlow.Transparency = 0.7
+    refreshGlow.Parent = refreshButton
+    
+    -- Hover effects
+    refreshButton.MouseEnter:Connect(function()
+        refreshGlow.Transparency = 0.4
+        refreshButton.Size = UDim2.new(0, 125, 0, 38)
+        refreshButton.Position = UDim2.new(1, -132.5, 0, 26)
+    end)
+    
+    refreshButton.MouseLeave:Connect(function()
+        refreshGlow.Transparency = 0.7
+        refreshButton.Size = UDim2.new(0, 120, 0, 35)
+        refreshButton.Position = UDim2.new(1, -130, 0, 27.5)
+    end)
+    
     refreshButton.MouseButton1Click:Connect(function()
+        -- Visual feedback on click
+        refreshButton.BackgroundColor3 = Color3.fromRGB(0, 130, 235)
+        task.wait(0.1)
+        refreshButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+        
         self:RefreshSelectedObject()
     end)
     
@@ -475,25 +534,92 @@ end
 function TweenGeneratorUI:CreatePreviewSection(parent)
     local section = self:CreateSection("Preview", parent, 490)
     
-    -- Preview button
+    -- Modern Preview button with glow
     local previewButton = Instance.new("TextButton")
-    previewButton.Size = UDim2.new(0, 150, 0, 40)
-    previewButton.Position = UDim2.new(0, 10, 0, 30)
-    previewButton.BackgroundColor3 = Color3.fromRGB(76, 175, 80)
+    previewButton.Size = UDim2.new(0, 160, 0, 45)
+    previewButton.Position = UDim2.new(0, 15, 0, 40)
+    previewButton.BackgroundColor3 = Color3.fromRGB(40, 180, 90)
     previewButton.BorderSizePixel = 0
-    previewButton.Text = "Preview Tween"
+    previewButton.Text = "▶ PREVIEW TWEEN"
     previewButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    previewButton.TextSize = 14
+    previewButton.Font = Enum.Font.GothamBold
     previewButton.Parent = section
     
-    -- Stop button
+    -- Modern button styling
+    local previewCorner = Instance.new("UICorner")
+    previewCorner.CornerRadius = UDim.new(0, 10)
+    previewCorner.Parent = previewButton
+    
+    local previewGradient = Instance.new("UIGradient")
+    previewGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 200, 110)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 180, 90))
+    }
+    previewGradient.Rotation = 90
+    previewGradient.Parent = previewButton
+    
+    local previewGlow = Instance.new("UIStroke")
+    previewGlow.Color = Color3.fromRGB(100, 255, 150)
+    previewGlow.Thickness = 2
+    previewGlow.Transparency = 0.7
+    previewGlow.Parent = previewButton
+    
+    -- Modern Stop button
     local stopButton = Instance.new("TextButton")
-    stopButton.Size = UDim2.new(0, 100, 0, 40)
-    stopButton.Position = UDim2.new(0, 170, 0, 30)
-    stopButton.BackgroundColor3 = Color3.fromRGB(244, 67, 54)
+    stopButton.Size = UDim2.new(0, 120, 0, 45)
+    stopButton.Position = UDim2.new(0, 185, 0, 40)
+    stopButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
     stopButton.BorderSizePixel = 0
-    stopButton.Text = "Stop"
+    stopButton.Text = "⏹ STOP"
     stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    stopButton.TextSize = 14
+    stopButton.Font = Enum.Font.GothamBold
     stopButton.Parent = section
+    
+    local stopCorner = Instance.new("UICorner")
+    stopCorner.CornerRadius = UDim.new(0, 10)
+    stopCorner.Parent = stopButton
+    
+    local stopGradient = Instance.new("UIGradient")
+    stopGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 80, 80)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 60, 60))
+    }
+    stopGradient.Rotation = 90
+    stopGradient.Parent = stopButton
+    
+    local stopGlow = Instance.new("UIStroke")
+    stopGlow.Color = Color3.fromRGB(255, 120, 120)
+    stopGlow.Thickness = 2
+    stopGlow.Transparency = 0.7
+    stopGlow.Parent = stopButton
+    
+    -- Hover effects for Preview button
+    previewButton.MouseEnter:Connect(function()
+        previewGlow.Transparency = 0.4
+        previewButton.BackgroundColor3 = Color3.fromRGB(50, 190, 100)
+        previewButton.Size = UDim2.new(0, 165, 0, 48)
+    end)
+    
+    previewButton.MouseLeave:Connect(function()
+        previewGlow.Transparency = 0.7
+        previewButton.BackgroundColor3 = Color3.fromRGB(40, 180, 90)
+        previewButton.Size = UDim2.new(0, 160, 0, 45)
+    end)
+    
+    -- Hover effects for Stop button
+    stopButton.MouseEnter:Connect(function()
+        stopGlow.Transparency = 0.4
+        stopButton.BackgroundColor3 = Color3.fromRGB(230, 70, 70)
+        stopButton.Size = UDim2.new(0, 125, 0, 48)
+    end)
+    
+    stopButton.MouseLeave:Connect(function()
+        stopGlow.Transparency = 0.7
+        stopButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+        stopButton.Size = UDim2.new(0, 120, 0, 45)
+    end)
     
     previewButton.MouseButton1Click:Connect(function()
         self:PreviewTween()
@@ -503,27 +629,82 @@ function TweenGeneratorUI:CreatePreviewSection(parent)
         self:StopPreview()
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 90)
+    section.Size = UDim2.new(1, -20, 0, 100)
 end
 
 function TweenGeneratorUI:CreateExportSection(parent)
-    local section = self:CreateSection("Export Code", parent, 590)
+    local section = self:CreateSection("Export Code", parent, 600)
     
-    -- Export button
+    -- Modern Export button with gradient and glow
     local exportButton = Instance.new("TextButton")
-    exportButton.Size = UDim2.new(1, -20, 0, 40)
-    exportButton.Position = UDim2.new(0, 10, 0, 30)
-    exportButton.BackgroundColor3 = Color3.fromRGB(255, 152, 0)
+    exportButton.Size = UDim2.new(1, -30, 0, 50)
+    exportButton.Position = UDim2.new(0, 15, 0, 40)
+    exportButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
     exportButton.BorderSizePixel = 0
-    exportButton.Text = "Export Code to Clipboard"
+    exportButton.Text = "📋 EXPORT CODE TO CLIPBOARD"
     exportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    exportButton.TextSize = 16
+    exportButton.Font = Enum.Font.GothamBold
     exportButton.Parent = section
     
+    -- Modern styling
+    local exportCorner = Instance.new("UICorner")
+    exportCorner.CornerRadius = UDim.new(0, 12)
+    exportCorner.Parent = exportButton
+    
+    local exportGradient = Instance.new("UIGradient")
+    exportGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 160, 20)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 140, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 120, 0))
+    }
+    exportGradient.Rotation = 90
+    exportGradient.Parent = exportButton
+    
+    local exportGlow = Instance.new("UIStroke")
+    exportGlow.Color = Color3.fromRGB(255, 200, 100)
+    exportGlow.Thickness = 3
+    exportGlow.Transparency = 0.7
+    exportGlow.Parent = exportButton
+    
+    -- Animated hover effects
+    exportButton.MouseEnter:Connect(function()
+        exportGlow.Transparency = 0.3
+        exportButton.Size = UDim2.new(1, -25, 0, 55)
+        exportButton.Position = UDim2.new(0, 12.5, 0, 37.5)
+        
+        -- Add pulsing effect
+        local pulseStart = tick()
+        local pulseConnection
+        pulseConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            local elapsed = tick() - pulseStart
+            local alpha = (math.sin(elapsed * 8) + 1) / 2
+            exportGlow.Transparency = 0.3 + (alpha * 0.4)
+        end)
+        
+        exportButton.AncestryChanged:Connect(function()
+            if pulseConnection then
+                pulseConnection:Disconnect()
+            end
+        end)
+    end)
+    
+    exportButton.MouseLeave:Connect(function()
+        exportGlow.Transparency = 0.7
+        exportButton.Size = UDim2.new(1, -30, 0, 50)
+        exportButton.Position = UDim2.new(0, 15, 0, 40)
+    end)
+    
     exportButton.MouseButton1Click:Connect(function()
+        -- Visual feedback on click
+        exportButton.BackgroundColor3 = Color3.fromRGB(220, 120, 0)
+        task.wait(0.1)
+        exportButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+        
         self:ExportCode()
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 90)
+    section.Size = UDim2.new(1, -20, 0, 110)
 end
 
 function TweenGeneratorUI:CreatePresetSection(parent)
@@ -1073,24 +1254,190 @@ function TweenGeneratorUI:CreateColor3Editor(propertyName, currentValue, yPos)
         math.floor(currentValue.G * 255 + 0.5),
         math.floor(currentValue.B * 255 + 0.5)
     }
+    local colors = {
+        Color3.fromRGB(255, 100, 100), -- Red for R
+        Color3.fromRGB(100, 255, 100), -- Green for G  
+        Color3.fromRGB(100, 150, 255)  -- Blue for B
+    }
     
+    -- Color preview
+    local colorPreview = Instance.new("Frame")
+    colorPreview.Size = UDim2.new(0, 40, 0, 40)
+    colorPreview.Position = UDim2.new(0, 10, 0, yPos - 10)
+    colorPreview.BackgroundColor3 = currentValue
+    colorPreview.BorderSizePixel = 0
+    colorPreview.Parent = self.propertyFrame
+    
+    local previewCorner = Instance.new("UICorner")
+    previewCorner.CornerRadius = UDim.new(0, 8)
+    previewCorner.Parent = colorPreview
+    
+    local previewStroke = Instance.new("UIStroke")
+    previewStroke.Color = Color3.fromRGB(100, 150, 255)
+    previewStroke.Thickness = 2
+    previewStroke.Transparency = 0.6
+    previewStroke.Parent = colorPreview
+    
+    -- Create RGB input fields with modern styling
     for i, component in ipairs(inputs) do
+        -- Component label
+        local componentLabel = Instance.new("TextLabel")
+        componentLabel.Size = UDim2.new(0.2, -5, 0, 12)
+        componentLabel.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos - 15)
+        componentLabel.BackgroundTransparency = 1
+        componentLabel.Text = component
+        componentLabel.TextColor3 = colors[i]
+        componentLabel.TextSize = 11
+        componentLabel.TextXAlignment = Enum.TextXAlignment.Center
+        componentLabel.Font = Enum.Font.GothamBold
+        componentLabel.Parent = self.propertyFrame
+        
+        -- Modern input field
         local input = Instance.new("TextBox")
         input.Name = propertyName .. component
         input.Size = UDim2.new(0.2, -5, 0, 25)
         input.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos)
-        input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
         input.BorderSizePixel = 0
         input.Text = tostring(values[i])
-        input.TextColor3 = Color3.fromRGB(255, 255, 255)
+        input.TextColor3 = Color3.fromRGB(200, 220, 255)
+        input.TextSize = 12
+        input.Font = Enum.Font.GothamMedium
+        input.TextXAlignment = Enum.TextXAlignment.Center
         input.Parent = self.propertyFrame
         
+        -- Modern styling
+        local inputCorner = Instance.new("UICorner")
+        inputCorner.CornerRadius = UDim.new(0, 6)
+        inputCorner.Parent = input
+        
+        local inputStroke = Instance.new("UIStroke")
+        inputStroke.Color = colors[i]
+        inputStroke.Thickness = 1
+        inputStroke.Transparency = 0.8
+        inputStroke.Parent = input
+        
+        -- Focus effects
+        input.Focused:Connect(function()
+            inputStroke.Transparency = 0.4
+            input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+        end)
+        
         input.FocusLost:Connect(function()
+            inputStroke.Transparency = 0.8
+            input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
             self:UpdatePropertyValue(propertyName, "Color3")
+            
+            -- Update color preview
+            local rInput = self.propertyFrame:FindFirstChild(propertyName .. "R")
+            local gInput = self.propertyFrame:FindFirstChild(propertyName .. "G")
+            local bInput = self.propertyFrame:FindFirstChild(propertyName .. "B")
+            
+            local r = tonumber(rInput and rInput.Text) or 0
+            local g = tonumber(gInput and gInput.Text) or 0
+            local b = tonumber(bInput and bInput.Text) or 0
+            
+            r = math.clamp(r, 0, 255)
+            g = math.clamp(g, 0, 255)
+            b = math.clamp(b, 0, 255)
+            
+            colorPreview.BackgroundColor3 = Color3.fromRGB(r, g, b)
         end)
     end
     
-    return yPos + 30
+    -- Add color preset buttons
+    local presetFrame = Instance.new("Frame")
+    presetFrame.Size = UDim2.new(0.6, -10, 0, 40)
+    presetFrame.Position = UDim2.new(0.3, 0, 0, yPos + 30)
+    presetFrame.BackgroundTransparency = 1
+    presetFrame.Parent = self.propertyFrame
+    
+    local colorPresets = {
+        {name = "Red", color = Color3.fromRGB(255, 0, 0)},
+        {name = "Green", color = Color3.fromRGB(0, 255, 0)},
+        {name = "Blue", color = Color3.fromRGB(0, 100, 255)},
+        {name = "Yellow", color = Color3.fromRGB(255, 255, 0)},
+        {name = "Purple", color = Color3.fromRGB(255, 0, 255)},
+        {name = "Cyan", color = Color3.fromRGB(0, 255, 255)},
+        {name = "White", color = Color3.fromRGB(255, 255, 255)},
+        {name = "Black", color = Color3.fromRGB(0, 0, 0)}
+    }
+    
+    for i, preset in ipairs(colorPresets) do
+        local row = math.floor((i-1) / 4)
+        local col = (i-1) % 4
+        
+        local presetBtn = Instance.new("TextButton")
+        presetBtn.Size = UDim2.new(0.23, 0, 0.45, 0)
+        presetBtn.Position = UDim2.new(col * 0.25, 0, row * 0.5, 0)
+        presetBtn.BackgroundColor3 = preset.color
+        presetBtn.BorderSizePixel = 0
+        presetBtn.Text = ""
+        presetBtn.Parent = presetFrame
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        btnCorner.Parent = presetBtn
+        
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.Color = Color3.fromRGB(150, 180, 255)
+        btnStroke.Thickness = 1
+        btnStroke.Transparency = 0.8
+        btnStroke.Parent = presetBtn
+        
+        -- Tooltip
+        local tooltip = Instance.new("TextLabel")
+        tooltip.Size = UDim2.new(0, 50, 0, 15)
+        tooltip.Position = UDim2.new(0.5, -25, 1, 2)
+        tooltip.BackgroundColor3 = Color3.fromRGB(20, 25, 40)
+        tooltip.BorderSizePixel = 0
+        tooltip.Text = preset.name
+        tooltip.TextColor3 = Color3.fromRGB(200, 220, 255)
+        tooltip.TextSize = 8
+        tooltip.Font = Enum.Font.Gotham
+        tooltip.TextXAlignment = Enum.TextXAlignment.Center
+        tooltip.Visible = false
+        tooltip.Parent = presetBtn
+        
+        local tooltipCorner = Instance.new("UICorner")
+        tooltipCorner.CornerRadius = UDim.new(0, 3)
+        tooltipCorner.Parent = tooltip
+        
+        presetBtn.MouseButton1Click:Connect(function()
+            -- Update input fields
+            local r = math.floor(preset.color.R * 255 + 0.5)
+            local g = math.floor(preset.color.G * 255 + 0.5)
+            local b = math.floor(preset.color.B * 255 + 0.5)
+            
+            local rInput = self.propertyFrame:FindFirstChild(propertyName .. "R")
+            local gInput = self.propertyFrame:FindFirstChild(propertyName .. "G")
+            local bInput = self.propertyFrame:FindFirstChild(propertyName .. "B")
+            
+            if rInput then rInput.Text = tostring(r) end
+            if gInput then gInput.Text = tostring(g) end
+            if bInput then bInput.Text = tostring(b) end
+            
+            -- Update color preview
+            colorPreview.BackgroundColor3 = preset.color
+            
+            -- Update the property value
+            self.endProperties[propertyName] = preset.color
+            self:UpdatePropertyStatus(propertyName, true)
+        end)
+        
+        -- Hover effects
+        presetBtn.MouseEnter:Connect(function()
+            btnStroke.Transparency = 0.4
+            tooltip.Visible = true
+        end)
+        
+        presetBtn.MouseLeave:Connect(function()
+            btnStroke.Transparency = 0.8
+            tooltip.Visible = false
+        end)
+    end
+    
+    return yPos + 75
 end
 
 function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
