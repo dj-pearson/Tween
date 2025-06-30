@@ -1,0 +1,10 @@
+{
+  "name": "TweenGeneratorPro",
+  "tree": {
+    "$className": "Plugin",
+    "$properties": {
+      "Name": "TweenGeneratorPro"
+    },
+    "$path": "src"
+  }
+} 

@@ -1,0 +1,268 @@
+# Tween Generator Pro - Roblox Studio Plugin
+
+A powerful visual tween animation creator for Roblox Studio that allows developers to create, preview, and export tween animations without writing code from scratch.
+
+## Features
+
+- **Visual Tween Creation**: Create tweens visually without manual scripting
+- **Live Preview**: Preview animations directly in Roblox Studio
+- **Multiple Property Support**: Animate Position, Size, Rotation, Transparency, Color, and more
+- **Universal Object Support**: Works with Parts, Models, UI elements (Frames, TextLabels, ImageLabels, etc.)
+- **Easing Options**: Choose from all available TweenService easing styles and directions
+- **Code Export**: Generate clean, ready-to-use Lua code
+- **Preset System**: Save and load tween configurations
+- **Non-destructive Preview**: Objects return to original state after preview
+- **Rojo/Argon Sync**: Fully compatible with modern Roblox development workflows
+
+## Installation
+
+### Method 1: Rojo/Argon Sync (Recommended for Developers)
+
+1. **Prerequisites**:
+   - Install [Rojo](https://rojo.space/) or [Argon VS Code Extension](https://marketplace.visualstudio.com/items?itemName=daimond113.argon)
+   - Clone or download this repository
+
+2. **Setup**:
+   ```bash
+   # Clone the repository
+   git clone <repository-url>
+   cd TweenGeneratorPro
+   
+   # Start Rojo sync
+   rojo serve
+   
+   # Or if using Argon, open in VS Code and start sync
+   ```
+
+3. **In Roblox Studio**:
+   - Connect to the Rojo/Argon server
+   - The plugin will appear as a Plugin object in your place
+   - Use "File → Publish to Roblox" or save as .rbxl for testing
+
+### Method 2: Direct Plugin Installation
+
+1. **Build the Plugin**:
+   - Open Roblox Studio
+   - Use Rojo/Argon to sync the project
+   - Right-click the generated Plugin object → "Save to File"
+   - Save as `TweenGeneratorPro.rbxm`
+
+2. **Install**:
+   - Navigate to your Roblox Studio Plugins folder
+   - Copy the `.rbxm` file into the Plugins directory
+   - Restart Roblox Studio
+
+### Method 3: Manual Installation (Legacy)
+
+1. **Locate Your Plugins Folder**:
+   - Open Roblox Studio → Plugins tab → Plugin Folder
+   
+2. **Copy Files**:
+   - Copy the entire `TweenGeneratorPro` folder
+   - Paste into your Plugins directory
+   - Restart Studio
+
+## Project Structure
+
+```
+TweenGeneratorPro/
+├── src/                          # Source code for Rojo/Argon sync
+│   ├── init.server.lua           # Main plugin entry point
+│   └── UI/                       # UI modules
+│       ├── TweenGeneratorUI.lua  # Main UI controller
+│       ├── PropertyHandler.lua   # Property management
+│       ├── CodeExporter.lua      # Code generation
+│       └── PresetManager.lua     # Preset functionality
+├── project.json                  # Rojo project configuration
+├── README.md                     # This file
+├── INSTALL.md                    # Detailed installation guide
+└── EXAMPLES.md                   # Usage examples
+```
+
+## Usage
+
+### Getting Started
+
+1. Open Roblox Studio
+2. Look for "Tween Generator Pro" in the plugins toolbar
+3. Click the button to open the plugin window
+4. Select an object in the Explorer or Workspace
+5. Click "Refresh" in the Object Selection section
+
+### Creating a Tween
+
+1. **Select Target Object**: Choose a Part, Model, or UI element
+2. **Set Properties**: Configure start and end values for properties you want to animate
+   - Position (Vector3 for Parts, UDim2 for UI)
+   - Size (Vector3 for Parts, UDim2 for UI)
+   - Rotation
+   - Transparency
+   - Color
+   - And more based on object type
+3. **Configure Tween Settings**:
+   - Duration: How long the animation takes
+   - Delay: How long to wait before starting
+   - Repeat Count: Number of times to repeat (0 for once, -1 for infinite)
+   - Reverses: Whether to play backwards after completing
+   - Easing Style: Choose from Linear, Sine, Back, Bounce, etc.
+   - Easing Direction: In, Out, or InOut
+4. **Preview**: Click "Preview Tween" to see the animation in Studio
+5. **Export**: Click "Copy Code to Clipboard" to get the generated Lua code
+
+### Supported Object Types
+
+#### Parts and Models
+- Position (Vector3)
+- Size (Vector3)
+- Rotation (Vector3, converted to CFrame)
+- Transparency (number)
+- Color (Color3)
+- Reflectance (number)
+
+#### UI Elements (Frame, TextLabel, ImageLabel, etc.)
+- Position (UDim2)
+- Size (UDim2)
+- Rotation (number)
+- BackgroundTransparency (number)
+- BackgroundColor3 (Color3)
+- TextTransparency (TextLabel only)
+- TextColor3 (TextLabel only)
+- ImageTransparency (ImageLabel only)
+- ImageColor3 (ImageLabel only)
+
+### Working with Presets
+
+1. **Save Preset**: Configure your tween settings and click "Save Preset"
+2. **Load Preset**: Select from saved presets in the dropdown
+3. **Delete Preset**: Remove unwanted presets
+
+### Code Export
+
+The plugin generates clean, production-ready Lua code:
+
+```lua
+-- Generated by Tween Generator Pro
+-- Object: Part (Part)
+
+local TweenService = game:GetService("TweenService")
+
+-- Reference to the object to tween
+local targetObject = game.Workspace.Part
+
+-- Create TweenInfo
+local tweenInfo = TweenInfo.new(
+    1, -- Duration
+    Enum.EasingStyle.Sine, -- EasingStyle
+    Enum.EasingDirection.Out, -- EasingDirection
+    0, -- RepeatCount
+    false, -- Reverses
+    0 -- DelayTime
+)
+
+-- Goal properties
+local goals = {
+    Position = Vector3.new(10.000, 5.000, 0.000),
+    Size = Vector3.new(2.000, 2.000, 2.000),
+}
+
+-- Create and play the tween
+local tween = TweenService:Create(targetObject, tweenInfo, goals)
+tween:Play()
+```
+
+## Development Workflow
+
+### Using with Rojo/Argon
+
+1. **Development Setup**:
+   ```bash
+   # Start development server
+   rojo serve
+   
+   # Or with Argon in VS Code
+   # Use Command Palette: "Argon: Start Session"
+   ```
+
+2. **Hot Reloading**:
+   - Edit files in `src/` directory
+   - Changes sync automatically to Studio
+   - Test immediately without restarting
+
+3. **Building for Distribution**:
+   ```bash
+   # Build plugin file
+   rojo build -o TweenGeneratorPro.rbxm
+   ```
+
+### File Extensions
+
+The project uses proper Rojo file extensions:
+- `init.server.lua` - Server Script (Plugin entry point)
+- `.lua` - ModuleScript (UI components)
+
+## Tips and Best Practices
+
+1. **Preview Before Export**: Always preview your tweens to ensure they work as expected
+2. **Object Paths**: The generated code includes automatic path detection, but you may need to adjust the `targetObject` reference for your specific use case
+3. **Property Values**: Make sure to set both start and end values for properties you want to animate
+4. **Performance**: Be mindful of tweening too many objects simultaneously
+5. **UI Scaling**: For UI elements, consider using Scale values in UDim2 for responsive design
+6. **Version Control**: With Rojo/Argon, you can version control your plugin development
+
+## Troubleshooting
+
+### Plugin Not Loading
+- Ensure all files are in the correct directory structure
+- Restart Roblox Studio
+- Check the Output window for error messages
+- Verify Rojo/Argon sync is working properly
+
+### Object Not Detected
+- Make sure the object is selected in Explorer
+- Click the "Refresh" button in the Object Selection section
+- Verify the object type is supported
+
+### Preview Not Working
+- Check that you have set end property values
+- Ensure the selected object still exists in the workspace
+- Try a simpler tween first to test functionality
+
+### Sync Issues (Rojo/Argon)
+- Verify project.json configuration
+- Check server connection in Studio
+- Restart the sync server if needed
+- Ensure file extensions are correct
+
+## Contributing
+
+This plugin is open source and contributions are welcome! Please feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
+- Improve documentation
+
+### Development Setup
+
+1. Fork the repository
+2. Set up Rojo/Argon development environment
+3. Make changes in the `src/` directory
+4. Test thoroughly in Studio
+5. Submit a pull request
+
+## License
+
+This project is provided as-is for educational and development purposes. Feel free to modify and distribute according to your needs.
+
+## Version History
+
+### v1.1.0
+- Added Rojo/Argon sync support
+- Restructured codebase for modern development workflow
+- Improved file organization
+
+### v1.0.0
+- Initial release
+- Basic tween creation and preview
+- Code export functionality
+- Preset system
+- Support for Parts and UI elements 

@@ -1,8 +1,8 @@
 -- Tween Generator Pro Plugin for Roblox Studio
--- Main plugin entry point
+-- Main plugin entry point (Server Script for Rojo/Argon sync)
 
 local plugin = script.Parent.Parent
-local TweenGeneratorUI = require(script.Parent.UI.TweenGeneratorUI)
+local TweenGeneratorUI = require(script.UI.TweenGeneratorUI)
 local TweenService = game:GetService("TweenService")
 local Selection = game:GetService("Selection")
 
