@@ -425,7 +425,7 @@ function TweenGeneratorUI:CreateUI()
     scrollFrame.Position = UDim2.new(0, 10, 0, 70)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.ScrollBarThickness = 8
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1600)
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1300)
     scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
     scrollFrame.Parent = mainFrame
     
@@ -527,42 +527,68 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
         self:RefreshSelectedObject()
     end)
     
-    -- Add info panel showing supported object types
+    -- Blue/neon info button
     local infoButton = Instance.new("TextButton")
-    infoButton.Size = UDim2.new(0, 30, 0, 30)
-    infoButton.Position = UDim2.new(1, -40, 0, 70)
-    infoButton.BackgroundColor3 = Color3.fromRGB(40, 120, 200)
+    infoButton.Size = UDim2.new(0, 35, 0, 35)
+    infoButton.Position = UDim2.new(1, -45, 0, 65)
+    infoButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     infoButton.BorderSizePixel = 0
     infoButton.Text = "ℹ️"
-    infoButton.TextSize = 16
+    infoButton.TextSize = 18
     infoButton.Parent = section
     
+    -- Add gradient background
+    local infoGradient = Instance.new("UIGradient")
+    infoGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 130, 220))
+    }
+    infoGradient.Rotation = 90
+    infoGradient.Parent = infoButton
+    
     local infoCorner = Instance.new("UICorner")
-    infoCorner.CornerRadius = UDim.new(0, 15)
+    infoCorner.CornerRadius = UDim.new(0, 17)
     infoCorner.Parent = infoButton
     
-    -- Info tooltip
+    -- Add neon glow
+    local infoGlow = Instance.new("UIStroke")
+    infoGlow.Color = Color3.fromRGB(0, 200, 255)
+    infoGlow.Thickness = 2
+    infoGlow.Transparency = 0.4
+    infoGlow.Parent = infoButton
+    
+    -- Blue/neon info tooltip
     local infoTooltip = Instance.new("Frame")
-    infoTooltip.Size = UDim2.new(0, 320, 0, 200)
-    infoTooltip.Position = UDim2.new(1, -330, 0, 0)
-    infoTooltip.BackgroundColor3 = Color3.fromRGB(25, 30, 45)
+    infoTooltip.Size = UDim2.new(0, 340, 0, 220)
+    infoTooltip.Position = UDim2.new(1, -350, 0, 0)
+    infoTooltip.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     infoTooltip.BorderSizePixel = 0
     infoTooltip.Visible = false
     infoTooltip.Parent = infoButton
     
+    -- Add gradient background to tooltip
+    local tooltipGradient = Instance.new("UIGradient")
+    tooltipGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(15, 25, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+    }
+    tooltipGradient.Rotation = 90
+    tooltipGradient.Parent = infoTooltip
+    
     local tooltipCorner = Instance.new("UICorner")
-    tooltipCorner.CornerRadius = UDim.new(0, 10)
+    tooltipCorner.CornerRadius = UDim.new(0, 12)
     tooltipCorner.Parent = infoTooltip
     
     local tooltipStroke = Instance.new("UIStroke")
-    tooltipStroke.Color = Color3.fromRGB(100, 150, 255)
-    tooltipStroke.Thickness = 2
-    tooltipStroke.Transparency = 0.6
+    tooltipStroke.Color = Color3.fromRGB(0, 180, 255)
+    tooltipStroke.Thickness = 3
+    tooltipStroke.Transparency = 0.4
     tooltipStroke.Parent = infoTooltip
     
     local infoText = Instance.new("TextLabel")
-    infoText.Size = UDim2.new(1, -20, 1, -20)
-    infoText.Position = UDim2.new(0, 10, 0, 10)
+    infoText.Size = UDim2.new(1, -25, 1, -25)
+    infoText.Position = UDim2.new(0, 12, 0, 12)
     infoText.BackgroundTransparency = 1
     infoText.Text = [[✨ SUPPORTED OBJECTS ✨
 
@@ -585,12 +611,19 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
 • Volume, PlaybackSpeed, Pitch
 
 ⚠️ Smart warnings detect common issues!]]
-    infoText.TextColor3 = Color3.fromRGB(200, 220, 255)
-    infoText.TextSize = 11
-    infoText.Font = Enum.Font.Gotham
+    infoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    infoText.TextSize = 12
+    infoText.Font = Enum.Font.GothamMedium
     infoText.TextXAlignment = Enum.TextXAlignment.Left
     infoText.TextYAlignment = Enum.TextYAlignment.Top
     infoText.Parent = infoTooltip
+    
+    -- Add subtle glow to text
+    local textGlow = Instance.new("UIStroke")
+    textGlow.Color = Color3.fromRGB(0, 150, 255)
+    textGlow.Thickness = 0.5
+    textGlow.Transparency = 0.8
+    textGlow.Parent = infoText
     
     infoButton.MouseEnter:Connect(function()
         infoTooltip.Visible = true
@@ -600,25 +633,25 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
         infoTooltip.Visible = false
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 110)
+    section.Size = UDim2.new(1, -40, 0, 180)
 end
 
 function TweenGeneratorUI:CreatePropertySection(parent)
-    local section = self:CreateSection("Properties", parent, 90)
+    local section = self:CreateSection("Properties", parent, 200)
     
     self.propertyFrame = Instance.new("Frame")
-    self.propertyFrame.Size = UDim2.new(1, -20, 0, 200)
-    self.propertyFrame.Position = UDim2.new(0, 10, 0, 30)
+    self.propertyFrame.Size = UDim2.new(1, -40, 0, 320)
+    self.propertyFrame.Position = UDim2.new(0, 20, 0, 60)
     self.propertyFrame.BackgroundTransparency = 1
     self.propertyFrame.Parent = section
     
-    section.Size = UDim2.new(1, -20, 0, 250)
+    section.Size = UDim2.new(1, -40, 0, 390)
 end
 
 function TweenGeneratorUI:CreateTweenControlsSection(parent)
-    local section = self:CreateSection("Tween Settings", parent, 350)
+    local section = self:CreateSection("Tween Settings", parent, 620)
     
-    local yPos = 30
+    local yPos = 40
     
     -- Duration
     yPos = self:CreateNumberInput(section, "Duration", self.duration, function(value)
@@ -646,18 +679,38 @@ function TweenGeneratorUI:CreateTweenControlsSection(parent)
     reversesLabel.Parent = section
     
     local reversesToggle = Instance.new("TextButton")
-    reversesToggle.Size = UDim2.new(0.5, -15, 0, 25)
+    reversesToggle.Size = UDim2.new(0.5, -15, 0, 30)
     reversesToggle.Position = UDim2.new(0.5, 5, 0, yPos)
-    reversesToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    reversesToggle.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     reversesToggle.BorderSizePixel = 0
     reversesToggle.Text = "false"
     reversesToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
     reversesToggle.Parent = section
     
+    -- Add blue/neon styling to toggle
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 8)
+    toggleCorner.Parent = reversesToggle
+    
+    local toggleGradient = Instance.new("UIGradient")
+    toggleGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+    }
+    toggleGradient.Rotation = 90
+    toggleGradient.Parent = reversesToggle
+    
+    local toggleStroke = Instance.new("UIStroke")
+    toggleStroke.Color = Color3.fromRGB(0, 150, 255)
+    toggleStroke.Thickness = 1
+    toggleStroke.Transparency = 0.6
+    toggleStroke.Parent = reversesToggle
+    
     reversesToggle.MouseButton1Click:Connect(function()
         self.reverses = not self.reverses
         reversesToggle.Text = tostring(self.reverses)
-        reversesToggle.BackgroundColor3 = self.reverses and Color3.fromRGB(76, 175, 80) or Color3.fromRGB(25, 25, 25)
+        reversesToggle.BackgroundColor3 = self.reverses and Color3.fromRGB(0, 180, 255) or Color3.fromRGB(15, 25, 50)
+        toggleStroke.Transparency = self.reverses and 0.3 or 0.6
     end)
     
     yPos = yPos + 35
@@ -673,13 +726,32 @@ function TweenGeneratorUI:CreateTweenControlsSection(parent)
     easingLabel.Parent = section
     
     local easingDropdown = Instance.new("TextButton")
-    easingDropdown.Size = UDim2.new(0.5, -15, 0, 25)
+    easingDropdown.Size = UDim2.new(0.5, -15, 0, 30)
     easingDropdown.Position = UDim2.new(0.5, 5, 0, yPos)
-    easingDropdown.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    easingDropdown.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     easingDropdown.BorderSizePixel = 0
     easingDropdown.Text = "Sine"
     easingDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
     easingDropdown.Parent = section
+    
+    -- Add blue/neon styling to dropdown
+    local dropdownCorner = Instance.new("UICorner")
+    dropdownCorner.CornerRadius = UDim.new(0, 8)
+    dropdownCorner.Parent = easingDropdown
+    
+    local dropdownGradient = Instance.new("UIGradient")
+    dropdownGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+    }
+    dropdownGradient.Rotation = 90
+    dropdownGradient.Parent = easingDropdown
+    
+    local dropdownStroke = Instance.new("UIStroke")
+    dropdownStroke.Color = Color3.fromRGB(0, 150, 255)
+    dropdownStroke.Thickness = 1
+    dropdownStroke.Transparency = 0.6
+    dropdownStroke.Parent = easingDropdown
     
     local easingStyles = {"Linear", "Sine", "Back", "Bounce", "Elastic", "Exponential", "Quad"}
     local currentEasingIndex = 2
@@ -694,97 +766,103 @@ function TweenGeneratorUI:CreateTweenControlsSection(parent)
         self.easingStyle = Enum.EasingStyle[selectedStyle]
     end)
     
-    section.Size = UDim2.new(1, -20, 0, yPos + 35)
+    section.Size = UDim2.new(1, -40, 0, yPos + 60)
 end
 
 function TweenGeneratorUI:CreatePreviewSection(parent)
-    local section = self:CreateSection("Preview", parent, 490)
+    local section = self:CreateSection("Preview", parent, 850)
     
-    -- Modern Preview button with glow
+    -- Blue/neon Preview button
     local previewButton = Instance.new("TextButton")
-    previewButton.Size = UDim2.new(0, 160, 0, 45)
-    previewButton.Position = UDim2.new(0, 15, 0, 40)
-    previewButton.BackgroundColor3 = Color3.fromRGB(40, 180, 90)
+    previewButton.Size = UDim2.new(0, 170, 0, 50)
+    previewButton.Position = UDim2.new(0, 20, 0, 50)
+    previewButton.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
     previewButton.BorderSizePixel = 0
     previewButton.Text = "▶ PREVIEW TWEEN"
     previewButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    previewButton.TextSize = 14
+    previewButton.TextSize = 15
     previewButton.Font = Enum.Font.GothamBold
     previewButton.Parent = section
     
-    -- Modern button styling
+    -- Blue/neon button styling
     local previewCorner = Instance.new("UICorner")
-    previewCorner.CornerRadius = UDim.new(0, 10)
+    previewCorner.CornerRadius = UDim.new(0, 12)
     previewCorner.Parent = previewButton
     
     local previewGradient = Instance.new("UIGradient")
     previewGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 200, 110)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 180, 90))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 200, 255)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 180, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 140, 220))
     }
     previewGradient.Rotation = 90
     previewGradient.Parent = previewButton
     
     local previewGlow = Instance.new("UIStroke")
-    previewGlow.Color = Color3.fromRGB(100, 255, 150)
-    previewGlow.Thickness = 2
-    previewGlow.Transparency = 0.7
+    previewGlow.Color = Color3.fromRGB(0, 220, 255)
+    previewGlow.Thickness = 3
+    previewGlow.Transparency = 0.5
     previewGlow.Parent = previewButton
     
-    -- Modern Stop button
+    -- Blue/neon Stop button with red accent
     local stopButton = Instance.new("TextButton")
-    stopButton.Size = UDim2.new(0, 120, 0, 45)
-    stopButton.Position = UDim2.new(0, 185, 0, 40)
-    stopButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+    stopButton.Size = UDim2.new(0, 130, 0, 50)
+    stopButton.Position = UDim2.new(0, 200, 0, 50)
+    stopButton.BackgroundColor3 = Color3.fromRGB(255, 80, 120)
     stopButton.BorderSizePixel = 0
     stopButton.Text = "⏹ STOP"
     stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    stopButton.TextSize = 14
+    stopButton.TextSize = 15
     stopButton.Font = Enum.Font.GothamBold
     stopButton.Parent = section
     
     local stopCorner = Instance.new("UICorner")
-    stopCorner.CornerRadius = UDim.new(0, 10)
+    stopCorner.CornerRadius = UDim.new(0, 12)
     stopCorner.Parent = stopButton
     
     local stopGradient = Instance.new("UIGradient")
     stopGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(240, 80, 80)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 60, 60))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 100, 140)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 80, 120)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 60, 100))
     }
     stopGradient.Rotation = 90
     stopGradient.Parent = stopButton
     
     local stopGlow = Instance.new("UIStroke")
-    stopGlow.Color = Color3.fromRGB(255, 120, 120)
-    stopGlow.Thickness = 2
-    stopGlow.Transparency = 0.7
+    stopGlow.Color = Color3.fromRGB(255, 150, 180)
+    stopGlow.Thickness = 3
+    stopGlow.Transparency = 0.5
     stopGlow.Parent = stopButton
     
-    -- Hover effects for Preview button
+    -- Enhanced hover effects for Preview button
     previewButton.MouseEnter:Connect(function()
-        previewGlow.Transparency = 0.4
-        previewButton.BackgroundColor3 = Color3.fromRGB(50, 190, 100)
-        previewButton.Size = UDim2.new(0, 165, 0, 48)
+        previewGlow.Transparency = 0.2
+        previewButton.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+        previewButton.Size = UDim2.new(0, 175, 0, 53)
+        previewButton.Position = UDim2.new(0, 17.5, 0, 48.5)
     end)
     
     previewButton.MouseLeave:Connect(function()
-        previewGlow.Transparency = 0.7
-        previewButton.BackgroundColor3 = Color3.fromRGB(40, 180, 90)
-        previewButton.Size = UDim2.new(0, 160, 0, 45)
+        previewGlow.Transparency = 0.5
+        previewButton.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+        previewButton.Size = UDim2.new(0, 170, 0, 50)
+        previewButton.Position = UDim2.new(0, 20, 0, 50)
     end)
     
-    -- Hover effects for Stop button
+    -- Enhanced hover effects for Stop button
     stopButton.MouseEnter:Connect(function()
-        stopGlow.Transparency = 0.4
-        stopButton.BackgroundColor3 = Color3.fromRGB(230, 70, 70)
-        stopButton.Size = UDim2.new(0, 125, 0, 48)
+        stopGlow.Transparency = 0.2
+        stopButton.BackgroundColor3 = Color3.fromRGB(255, 100, 140)
+        stopButton.Size = UDim2.new(0, 135, 0, 53)
+        stopButton.Position = UDim2.new(0, 197.5, 0, 48.5)
     end)
     
     stopButton.MouseLeave:Connect(function()
-        stopGlow.Transparency = 0.7
-        stopButton.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-        stopButton.Size = UDim2.new(0, 120, 0, 45)
+        stopGlow.Transparency = 0.5
+        stopButton.BackgroundColor3 = Color3.fromRGB(255, 80, 120)
+        stopButton.Size = UDim2.new(0, 130, 0, 50)
+        stopButton.Position = UDim2.new(0, 200, 0, 50)
     end)
     
     previewButton.MouseButton1Click:Connect(function()
@@ -795,17 +873,17 @@ function TweenGeneratorUI:CreatePreviewSection(parent)
         self:StopPreview()
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 100)
+    section.Size = UDim2.new(1, -30, 0, 160)
 end
 
 function TweenGeneratorUI:CreateExportSection(parent)
-    local section = self:CreateSection("Export Code", parent, 600)
+    local section = self:CreateSection("Export Code", parent, 1080)
     
-    -- Modern Export button with gradient and glow
+    -- Blue/neon Export button
     local exportButton = Instance.new("TextButton")
-    exportButton.Size = UDim2.new(1, -30, 0, 50)
-    exportButton.Position = UDim2.new(0, 15, 0, 40)
-    exportButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+    exportButton.Size = UDim2.new(1, -40, 0, 55)
+    exportButton.Position = UDim2.new(0, 20, 0, 50)
+    exportButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
     exportButton.BorderSizePixel = 0
     exportButton.Text = "📋 EXPORT CODE TO CLIPBOARD"
     exportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -813,16 +891,16 @@ function TweenGeneratorUI:CreateExportSection(parent)
     exportButton.Font = Enum.Font.GothamBold
     exportButton.Parent = section
     
-    -- Modern styling
+    -- Blue/neon styling with orange accent
     local exportCorner = Instance.new("UICorner")
-    exportCorner.CornerRadius = UDim.new(0, 12)
+    exportCorner.CornerRadius = UDim.new(0, 15)
     exportCorner.Parent = exportButton
     
     local exportGradient = Instance.new("UIGradient")
     exportGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 160, 20)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 140, 0)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(235, 120, 0))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 170, 20)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 150, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 130, 0))
     }
     exportGradient.Rotation = 90
     exportGradient.Parent = exportButton
@@ -830,22 +908,23 @@ function TweenGeneratorUI:CreateExportSection(parent)
     local exportGlow = Instance.new("UIStroke")
     exportGlow.Color = Color3.fromRGB(255, 200, 100)
     exportGlow.Thickness = 3
-    exportGlow.Transparency = 0.7
+    exportGlow.Transparency = 0.5
     exportGlow.Parent = exportButton
     
-    -- Animated hover effects
+    -- Enhanced neon hover effects
     exportButton.MouseEnter:Connect(function()
-        exportGlow.Transparency = 0.3
-        exportButton.Size = UDim2.new(1, -25, 0, 55)
-        exportButton.Position = UDim2.new(0, 12.5, 0, 37.5)
+        exportGlow.Transparency = 0.2
+        exportButton.Size = UDim2.new(1, -35, 0, 60)
+        exportButton.Position = UDim2.new(0, 17.5, 0, 47.5)
+        exportButton.BackgroundColor3 = Color3.fromRGB(255, 170, 20)
         
-        -- Add pulsing effect
+        -- Add pulsing neon effect
         local pulseStart = tick()
         local pulseConnection
         pulseConnection = game:GetService("RunService").Heartbeat:Connect(function()
             local elapsed = tick() - pulseStart
-            local alpha = (math.sin(elapsed * 8) + 1) / 2
-            exportGlow.Transparency = 0.3 + (alpha * 0.4)
+            local alpha = (math.sin(elapsed * 6) + 1) / 2
+            exportGlow.Transparency = 0.2 + (alpha * 0.3)
         end)
         
         exportButton.AncestryChanged:Connect(function()
@@ -856,21 +935,24 @@ function TweenGeneratorUI:CreateExportSection(parent)
     end)
     
     exportButton.MouseLeave:Connect(function()
-        exportGlow.Transparency = 0.7
-        exportButton.Size = UDim2.new(1, -30, 0, 50)
-        exportButton.Position = UDim2.new(0, 15, 0, 40)
+        exportGlow.Transparency = 0.5
+        exportButton.Size = UDim2.new(1, -40, 0, 55)
+        exportButton.Position = UDim2.new(0, 20, 0, 50)
+        exportButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
     end)
     
     exportButton.MouseButton1Click:Connect(function()
-        -- Visual feedback on click
-        exportButton.BackgroundColor3 = Color3.fromRGB(220, 120, 0)
+        -- Enhanced visual feedback on click
+        exportButton.BackgroundColor3 = Color3.fromRGB(230, 130, 0)
+        exportGlow.Transparency = 0.1
         task.wait(0.1)
-        exportButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+        exportButton.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+        exportGlow.Transparency = 0.5
         
         self:ExportCode()
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 110)
+    section.Size = UDim2.new(1, -30, 0, 160)
 end
 
 function TweenGeneratorUI:CreatePresetSection(parent)
@@ -909,21 +991,14 @@ end
 function TweenGeneratorUI:CreateSection(title, parent, yOffset)
     local section = Instance.new("Frame")
     section.Name = title .. "Section"
-    section.Size = UDim2.new(1, -20, 0, 120)
-    section.Position = UDim2.new(0, 10, 0, yOffset)
-    section.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
+    section.Size = UDim2.new(1, -40, 0, 180)
+    section.Position = UDim2.new(0, 20, 0, yOffset)
+    section.BackgroundColor3 = Color3.fromRGB(18, 28, 45)
     section.BorderSizePixel = 0
     section.Parent = parent
     
-    -- Blue gradient background
-    local sectionGradient = Instance.new("UIGradient")
-    sectionGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(15, 25, 50)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
-    }
-    sectionGradient.Rotation = 90
-    sectionGradient.Parent = section
+    -- Simplified background for better performance
+    section.BackgroundColor3 = Color3.fromRGB(20, 30, 50)
     
     -- Add corner radius and neon border
     local corner = Instance.new("UICorner")
@@ -937,24 +1012,30 @@ function TweenGeneratorUI:CreateSection(title, parent, yOffset)
     stroke.Transparency = 0.5
     stroke.Parent = section
     
-    -- Modern title with neon glow
+    -- Modern title with better contrast
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -25, 0, 35)
-    titleLabel.Position = UDim2.new(0, 20, 0, 10)
+    titleLabel.Size = UDim2.new(1, -25, 0, 40)
+    titleLabel.Position = UDim2.new(0, 25, 0, 15)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title:upper()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 16
+    titleLabel.TextSize = 18
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Parent = section
     
-    -- Add neon glow to title
-    local titleStroke = Instance.new("UIStroke")
-    titleStroke.Color = Color3.fromRGB(0, 200, 255)
-    titleStroke.Thickness = 1
-    titleStroke.Transparency = 0.4
-    titleStroke.Parent = titleLabel
+    -- Add subtle text shadow for better readability
+    local titleShadow = Instance.new("TextLabel")
+    titleShadow.Size = titleLabel.Size
+    titleShadow.Position = UDim2.new(0, 26, 0, 16)
+    titleShadow.BackgroundTransparency = 1
+    titleShadow.Text = titleLabel.Text
+    titleShadow.TextColor3 = Color3.fromRGB(0, 0, 0)
+    titleShadow.TextSize = titleLabel.TextSize
+    titleShadow.TextXAlignment = titleLabel.TextXAlignment
+    titleShadow.Font = titleLabel.Font
+    titleShadow.ZIndex = titleLabel.ZIndex - 1
+    titleShadow.Parent = section
     
     return section
 end
@@ -982,71 +1063,103 @@ function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, cal
     controlFrame.BackgroundTransparency = 1
     controlFrame.Parent = parent
     
-    -- Modern slider track
+    -- Blue/neon slider track
     local sliderTrack = Instance.new("Frame")
-    sliderTrack.Size = UDim2.new(0.6, -10, 0, 6)
-    sliderTrack.Position = UDim2.new(0, 0, 0.5, -3)
-    sliderTrack.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+    sliderTrack.Size = UDim2.new(0.6, -10, 0, 8)
+    sliderTrack.Position = UDim2.new(0, 0, 0.5, -4)
+    sliderTrack.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     sliderTrack.BorderSizePixel = 0
     sliderTrack.Parent = controlFrame
     
+    -- Add gradient to track
+    local trackGradient = Instance.new("UIGradient")
+    trackGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+    }
+    trackGradient.Rotation = 90
+    trackGradient.Parent = sliderTrack
+    
     local trackCorner = Instance.new("UICorner")
-    trackCorner.CornerRadius = UDim.new(0, 3)
+    trackCorner.CornerRadius = UDim.new(0, 4)
     trackCorner.Parent = sliderTrack
     
-    -- Slider fill (progress indicator)
+    -- Add neon border to track
+    local trackStroke = Instance.new("UIStroke")
+    trackStroke.Color = Color3.fromRGB(0, 150, 255)
+    trackStroke.Thickness = 1
+    trackStroke.Transparency = 0.7
+    trackStroke.Parent = sliderTrack
+    
+    -- Slider fill (progress indicator) with neon glow
     local sliderFill = Instance.new("Frame")
     sliderFill.Size = UDim2.new((defaultValue - minValue) / (maxValue - minValue), 0, 1, 0)
     sliderFill.Position = UDim2.new(0, 0, 0, 0)
-    sliderFill.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
     sliderFill.BorderSizePixel = 0
     sliderFill.Parent = sliderTrack
     
     local fillCorner = Instance.new("UICorner")
-    fillCorner.CornerRadius = UDim.new(0, 3)
+    fillCorner.CornerRadius = UDim.new(0, 4)
     fillCorner.Parent = sliderFill
     
-    -- Add glow to fill
+    -- Add neon glow to fill
     local fillGlow = Instance.new("UIStroke")
-    fillGlow.Color = Color3.fromRGB(100, 150, 255)
-    fillGlow.Thickness = 1
-    fillGlow.Transparency = 0.6
+    fillGlow.Color = Color3.fromRGB(0, 220, 255)
+    fillGlow.Thickness = 2
+    fillGlow.Transparency = 0.3
     fillGlow.Parent = sliderFill
     
-    -- Slider handle
+    -- Slider handle with blue/neon styling
     local sliderHandle = Instance.new("TextButton")
-    sliderHandle.Size = UDim2.new(0, 16, 0, 16)
-    sliderHandle.Position = UDim2.new((defaultValue - minValue) / (maxValue - minValue), -8, 0.5, -8)
-    sliderHandle.BackgroundColor3 = Color3.fromRGB(150, 180, 255)
+    sliderHandle.Size = UDim2.new(0, 18, 0, 18)
+    sliderHandle.Position = UDim2.new((defaultValue - minValue) / (maxValue - minValue), -9, 0.5, -9)
+    sliderHandle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     sliderHandle.BorderSizePixel = 0
     sliderHandle.Text = ""
     sliderHandle.Parent = controlFrame
     
     local handleCorner = Instance.new("UICorner")
-    handleCorner.CornerRadius = UDim.new(0, 8)
+    handleCorner.CornerRadius = UDim.new(0, 9)
     handleCorner.Parent = sliderHandle
     
     local handleGlow = Instance.new("UIStroke")
-    handleGlow.Color = Color3.fromRGB(150, 180, 255)
-    handleGlow.Thickness = 2
-    handleGlow.Transparency = 0.4
+    handleGlow.Color = Color3.fromRGB(0, 200, 255)
+    handleGlow.Thickness = 3
+    handleGlow.Transparency = 0.2
     handleGlow.Parent = sliderHandle
     
-    -- Value display
+    -- Value display with blue/neon styling
     local valueDisplay = Instance.new("TextLabel")
-    valueDisplay.Size = UDim2.new(0, 60, 0, 30)
-    valueDisplay.Position = UDim2.new(0.6, 5, 0, 2.5)
-    valueDisplay.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+    valueDisplay.Size = UDim2.new(0, 65, 0, 32)
+    valueDisplay.Position = UDim2.new(0.6, 5, 0, 1.5)
+    valueDisplay.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     valueDisplay.BorderSizePixel = 0
     valueDisplay.Text = string.format("%.2f", defaultValue)
-    valueDisplay.TextColor3 = Color3.fromRGB(200, 220, 255)
+    valueDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
     valueDisplay.TextSize = 14
     valueDisplay.Font = Enum.Font.GothamMedium
     valueDisplay.Parent = controlFrame
     
+    -- Add gradient to value display
+    local displayGradient = Instance.new("UIGradient")
+    displayGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+    }
+    displayGradient.Rotation = 90
+    displayGradient.Parent = valueDisplay
+    
     local displayCorner = Instance.new("UICorner")
-    displayCorner.CornerRadius = UDim.new(0, 6)
+    displayCorner.CornerRadius = UDim.new(0, 8)
     displayCorner.Parent = valueDisplay
+    
+    -- Add neon border to value display
+    local displayStroke = Instance.new("UIStroke")
+    displayStroke.Color = Color3.fromRGB(0, 150, 255)
+    displayStroke.Thickness = 1
+    displayStroke.Transparency = 0.6
+    displayStroke.Parent = valueDisplay
     
     -- Preset buttons for common values
     local presetFrame = Instance.new("Frame")
@@ -1066,32 +1179,50 @@ function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, cal
     
     for i, presetValue in ipairs(presets) do
         local presetBtn = Instance.new("TextButton")
-        presetBtn.Size = UDim2.new(0.23, 0, 1, 0)
-        presetBtn.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
-        presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        presetBtn.Size = UDim2.new(0.23, -1, 1, 0)
+        presetBtn.Position = UDim2.new((i-1) * 0.25, 1, 0, 0)
+        presetBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
         presetBtn.BorderSizePixel = 0
         presetBtn.Text = tostring(presetValue)
-        presetBtn.TextColor3 = Color3.fromRGB(160, 180, 220)
+        presetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         presetBtn.TextSize = 10
         presetBtn.Font = Enum.Font.Gotham
         presetBtn.Parent = presetFrame
         
+        -- Add gradient background
+        local btnGradient = Instance.new("UIGradient")
+        btnGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 35, 65)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+        }
+        btnGradient.Rotation = 90
+        btnGradient.Parent = presetBtn
+        
         local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.CornerRadius = UDim.new(0, 6)
         btnCorner.Parent = presetBtn
+        
+        -- Add neon border
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.Color = Color3.fromRGB(0, 150, 255)
+        btnStroke.Thickness = 1
+        btnStroke.Transparency = 0.6
+        btnStroke.Parent = presetBtn
         
         presetBtn.MouseButton1Click:Connect(function()
             callback(presetValue)
             self:UpdateSlider(sliderHandle, sliderFill, valueDisplay, presetValue, minValue, maxValue)
         end)
         
-        -- Hover effect
+        -- Enhanced hover effects
         presetBtn.MouseEnter:Connect(function()
-            presetBtn.BackgroundColor3 = Color3.fromRGB(60, 80, 120)
+            presetBtn.BackgroundColor3 = Color3.fromRGB(25, 40, 70)
+            btnStroke.Transparency = 0.3
         end)
         
         presetBtn.MouseLeave:Connect(function()
-            presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+            presetBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
+            btnStroke.Transparency = 0.6
         end)
     end
     
@@ -1122,13 +1253,13 @@ function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, cal
         end
     end)
     
-    return yPos + 75
+    return yPos + 95
 end
 
 function TweenGeneratorUI:UpdateSlider(handle, fill, display, value, minValue, maxValue)
     local percent = (value - minValue) / (maxValue - minValue)
     
-    handle.Position = UDim2.new(percent, -8, 0.5, -8)
+    handle.Position = UDim2.new(percent, -9, 0.5, -9)
     fill.Size = UDim2.new(percent, 0, 1, 0)
     display.Text = string.format("%.2f", value)
 end
@@ -1259,17 +1390,30 @@ function TweenGeneratorUI:CreatePropertyEditor(propertyName, propertyInfo, yPos)
     
     local currentValue = targetObject[propertyName]
     
-    -- Property label with status indicator (improved readability)
+    -- Property label with better readability
     local propertyLabel = Instance.new("TextLabel")
-    propertyLabel.Size = UDim2.new(0.3, -10, 0, 25)
-    propertyLabel.Position = UDim2.new(0, 10, 0, yPos)
+    propertyLabel.Size = UDim2.new(0.25, -10, 0, 30)
+    propertyLabel.Position = UDim2.new(0, 15, 0, yPos)
     propertyLabel.BackgroundTransparency = 1
     propertyLabel.Text = propertyName:upper() .. ":"
-    propertyLabel.TextColor3 = Color3.fromRGB(220, 240, 255)
-    propertyLabel.TextSize = 14
+    propertyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    propertyLabel.TextSize = 16
     propertyLabel.TextXAlignment = Enum.TextXAlignment.Left
     propertyLabel.Font = Enum.Font.GothamBold
     propertyLabel.Parent = self.propertyFrame
+    
+    -- Add text shadow for better readability
+    local labelShadow = Instance.new("TextLabel")
+    labelShadow.Size = propertyLabel.Size
+    labelShadow.Position = UDim2.new(0, 16, 0, yPos + 1)
+    labelShadow.BackgroundTransparency = 1
+    labelShadow.Text = propertyLabel.Text
+    labelShadow.TextColor3 = Color3.fromRGB(0, 0, 0)
+    labelShadow.TextSize = propertyLabel.TextSize
+    labelShadow.TextXAlignment = propertyLabel.TextXAlignment
+    labelShadow.Font = propertyLabel.Font
+    labelShadow.ZIndex = propertyLabel.ZIndex - 1
+    labelShadow.Parent = self.propertyFrame
     
     -- Add warning indicators for important properties
     local warning = self:CheckPropertyWarnings(targetObject, propertyName)
@@ -1345,40 +1489,46 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
     
     -- Create input fields with blue/neon styling and better spacing
     for i, component in ipairs(inputs) do
-        -- Component label with better positioning
+        -- Component label with better spacing
         local componentLabel = Instance.new("TextLabel")
-        componentLabel.Size = UDim2.new(0.18, -5, 0, 15)
-        componentLabel.Position = UDim2.new(0.32 + (i-1) * 0.22, 0, 0, yPos - 18)
+        componentLabel.Size = UDim2.new(0.16, -5, 0, 20)
+        componentLabel.Position = UDim2.new(0.28 + (i-1) * 0.24, 0, 0, yPos - 25)
         componentLabel.BackgroundTransparency = 1
         componentLabel.Text = component
         componentLabel.TextColor3 = colors[i]
-        componentLabel.TextSize = 13
+        componentLabel.TextSize = 16
         componentLabel.TextXAlignment = Enum.TextXAlignment.Center
         componentLabel.Font = Enum.Font.GothamBold
         componentLabel.Parent = self.propertyFrame
         
-        -- Modern input field with blue theme
+        -- Add shadow to component label
+        local compShadow = Instance.new("TextLabel")
+        compShadow.Size = componentLabel.Size
+        compShadow.Position = UDim2.new(0.28 + (i-1) * 0.24, 1, 0, yPos - 24)
+        compShadow.BackgroundTransparency = 1
+        compShadow.Text = componentLabel.Text
+        compShadow.TextColor3 = Color3.fromRGB(0, 0, 0)
+        compShadow.TextSize = componentLabel.TextSize
+        compShadow.TextXAlignment = componentLabel.TextXAlignment
+        compShadow.Font = componentLabel.Font
+        compShadow.ZIndex = componentLabel.ZIndex - 1
+        compShadow.Parent = self.propertyFrame
+        
+        -- Modern input field with better spacing
         local input = Instance.new("TextBox")
         input.Name = propertyName .. component
-        input.Size = UDim2.new(0.18, -5, 0, 28)
-        input.Position = UDim2.new(0.32 + (i-1) * 0.22, 0, 0, yPos)
-        input.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
+        input.Size = UDim2.new(0.16, -5, 0, 32)
+        input.Position = UDim2.new(0.28 + (i-1) * 0.24, 0, 0, yPos)
+        input.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
         input.BorderSizePixel = 0
         input.Text = string.format("%.2f", values[i])
         input.TextColor3 = Color3.fromRGB(255, 255, 255)
-        input.TextSize = 13
+        input.TextSize = 15
         input.Font = Enum.Font.GothamMedium
         input.TextXAlignment = Enum.TextXAlignment.Center
         input.Parent = self.propertyFrame
         
-        -- Add gradient background
-        local inputGradient = Instance.new("UIGradient")
-        inputGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
-        }
-        inputGradient.Rotation = 90
-        inputGradient.Parent = input
+        -- Simplified input styling for better performance
         
         -- Modern styling with neon borders
         local inputCorner = Instance.new("UICorner")
@@ -1404,10 +1554,10 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
         end)
     end
     
-    -- Add preset buttons with blue/neon styling
+    -- Add preset buttons with better spacing
     local presetFrame = Instance.new("Frame")
-    presetFrame.Size = UDim2.new(0.66, -10, 0, 25)
-    presetFrame.Position = UDim2.new(0.32, 0, 0, yPos + 35)
+    presetFrame.Size = UDim2.new(0.72, -10, 0, 30)
+    presetFrame.Position = UDim2.new(0.28, 0, 0, yPos + 40)
     presetFrame.BackgroundTransparency = 1
     presetFrame.Parent = self.propertyFrame
     
@@ -1494,7 +1644,7 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
         end)
     end
     
-    return yPos + 70
+    return yPos + 110
 end
 
 function TweenGeneratorUI:CreateUDim2Editor(propertyName, currentValue, yPos)
@@ -1710,7 +1860,7 @@ function TweenGeneratorUI:CreateColor3Editor(propertyName, currentValue, yPos)
         end)
     end
     
-    return yPos + 75
+    return yPos + 95
 end
 
 function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
@@ -2123,15 +2273,15 @@ local button = toolbar:CreateButton(
     "rbxasset://textures/DevConsole/Close.png"
 )
 
--- Create DockWidget
+-- Create DockWidget with much larger size for better spacing
 local widgetInfo = DockWidgetPluginGuiInfo.new(
     Enum.InitialDockState.Float,
     false, -- InitialEnabled
     false, -- InitialEnabledShouldOverrideRestore
-    400,   -- FloatingXSize
-    600,   -- FloatingYSize
-    300,   -- MinWidth
-    400    -- MinHeight
+    550,   -- FloatingXSize (was 400)
+    850,   -- FloatingYSize (was 600)
+    500,   -- MinWidth (was 300)
+    750    -- MinHeight (was 400)
 )
 
 local widget = plugin:CreateDockWidgetPluginGui("TweenGeneratorPro", widgetInfo)
