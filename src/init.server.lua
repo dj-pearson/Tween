@@ -3010,7 +3010,7 @@ local toolbar = plugin:CreateToolbar("Tween Generator Pro")
 local button = toolbar:CreateButton(
     "Tween Generator",
     "Open Tween Generator Pro",
-    "rbxasset://textures/DevConsole/Close.png"
+    "rbxassetid://112930572021820"
 )
 
 -- Create DockWidget with much larger size for better spacing
