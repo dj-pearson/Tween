@@ -23,9 +23,11 @@ local PART_PROPERTIES = {
     Position = {type = "Vector3", default = Vector3.new(0, 0, 0)},
     Size = {type = "Vector3", default = Vector3.new(1, 1, 1)},
     Rotation = {type = "Vector3", default = Vector3.new(0, 0, 0)},
+    Orientation = {type = "Vector3", default = Vector3.new(0, 0, 0)},
     Transparency = {type = "number", default = 0, min = 0, max = 1},
     Color = {type = "Color3", default = Color3.fromRGB(163, 162, 165)},
     Reflectance = {type = "number", default = 0, min = 0, max = 1},
+    Material = {type = "string", default = "Plastic", warning = "Limited tween support"},
 }
 
 local UI_PROPERTIES = {
@@ -35,6 +37,8 @@ local UI_PROPERTIES = {
     BackgroundTransparency = {type = "number", default = 0, min = 0, max = 1},
     BackgroundColor3 = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
     BorderSizePixel = {type = "number", default = 1, min = 0},
+    ImageTransparency = {type = "number", default = 0, min = 0, max = 1},
+    ImageColor3 = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
 }
 
 local TEXTLABEL_PROPERTIES = {
@@ -47,6 +51,50 @@ local TEXTLABEL_PROPERTIES = {
     TextColor3 = {type = "Color3", default = Color3.fromRGB(0, 0, 0)},
     TextStrokeTransparency = {type = "number", default = 1, min = 0, max = 1},
     TextStrokeColor3 = {type = "Color3", default = Color3.fromRGB(0, 0, 0)},
+    TextSize = {type = "number", default = 14, min = 1, max = 100},
+}
+
+-- New property sets for lighting and effects
+local LIGHT_PROPERTIES = {
+    Brightness = {type = "number", default = 1, min = 0, max = 5},
+    Range = {type = "number", default = 8, min = 0, max = 60},
+    Color = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
+}
+
+local POINTLIGHT_PROPERTIES = {
+    Brightness = {type = "number", default = 1, min = 0, max = 5},
+    Range = {type = "number", default = 8, min = 0, max = 60},
+    Color = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
+}
+
+local SPOTLIGHT_PROPERTIES = {
+    Brightness = {type = "number", default = 1, min = 0, max = 5},
+    Range = {type = "number", default = 8, min = 0, max = 60},
+    Color = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
+    Angle = {type = "number", default = 90, min = 0, max = 180},
+}
+
+local BLOOM_PROPERTIES = {
+    Intensity = {type = "number", default = 0.4, min = 0, max = 5},
+    Size = {type = "number", default = 24, min = 0, max = 100},
+    Threshold = {type = "number", default = 0.95, min = 0, max = 5},
+}
+
+local BLUR_PROPERTIES = {
+    Size = {type = "number", default = 5, min = 0, max = 100},
+}
+
+local COLORCORRECTION_PROPERTIES = {
+    Brightness = {type = "number", default = 0, min = -1, max = 1},
+    Contrast = {type = "number", default = 0, min = -1, max = 1},
+    Saturation = {type = "number", default = 0, min = -1, max = 1},
+    TintColor = {type = "Color3", default = Color3.fromRGB(255, 255, 255)},
+}
+
+local SOUND_PROPERTIES = {
+    Volume = {type = "number", default = 0.5, min = 0, max = 1},
+    PlaybackSpeed = {type = "number", default = 1, min = 0.1, max = 20},
+    Pitch = {type = "number", default = 1, min = 0.1, max = 20},
 }
 
 function PropertyHandler.GetTweenableProperties(object)
@@ -79,14 +127,43 @@ function PropertyHandler.GetTweenableProperties(object)
         return PART_PROPERTIES
     end
     
-    -- UI Objects
-    if className == "TextLabel" or className == "TextButton" or className == "TextBox" then
-        return TEXTLABEL_PROPERTIES
+    -- 💡 LIGHTING OBJECTS
+    if className == "PointLight" then
+        return POINTLIGHT_PROPERTIES
+    elseif className == "SpotLight" then
+        return SPOTLIGHT_PROPERTIES
+    elseif className == "SurfaceLight" or object:IsA("Light") then
+        return LIGHT_PROPERTIES
     end
     
-    -- Generic UI element (catch-all for other GUI objects)
-    if object:IsA("GuiObject") then
+    -- 🎨 POST-PROCESSING EFFECTS
+    if className == "BloomEffect" then
+        return BLOOM_PROPERTIES
+    elseif className == "BlurEffect" then
+        return BLUR_PROPERTIES
+    elseif className == "ColorCorrectionEffect" then
+        return COLORCORRECTION_PROPERTIES
+    end
+    
+    -- 🔊 SOUND OBJECTS
+    if className == "Sound" then
+        return SOUND_PROPERTIES
+    end
+    
+    -- 🎛 UI OBJECTS (Enhanced Detection)
+    if className == "TextLabel" or className == "TextButton" or className == "TextBox" then
+        return TEXTLABEL_PROPERTIES
+    elseif className == "ImageLabel" or className == "ImageButton" then
+        -- Combine UI and Image properties
+        local imageProperties = {}
+        for k, v in pairs(UI_PROPERTIES) do
+            imageProperties[k] = v
+        end
+        return imageProperties
+    elseif className == "Frame" or className == "ScrollingFrame" then
         return UI_PROPERTIES
+    elseif object:IsA("GuiObject") then
+        return UI_PROPERTIES -- Generic UI element fallback
     end
     
     return {}
@@ -270,21 +347,22 @@ function TweenGeneratorUI.new(widget, plugin)
 end
 
 function TweenGeneratorUI:CreateUI()
-    -- Main frame with modern gradient background
+    -- Main frame with blue/neon gradient background
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(1, 0, 1, 0)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 25)
     mainFrame.BorderSizePixel = 0
     mainFrame.Parent = self.widget
     
-    -- Add gradient background
+    -- Add blue gradient background
     local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 35)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 25))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 18, 35)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(8, 12, 25)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 25, 45))
     }
-    gradient.Rotation = 45
+    gradient.Rotation = 135
     gradient.Parent = mainFrame
     
     -- Add corner radius
@@ -292,48 +370,63 @@ function TweenGeneratorUI:CreateUI()
     mainCorner.CornerRadius = UDim.new(0, 12)
     mainCorner.Parent = mainFrame
     
-    -- Header with title and glow effect
+    -- Header with blue/neon styling
     local headerFrame = Instance.new("Frame")
     headerFrame.Name = "Header"
-    headerFrame.Size = UDim2.new(1, 0, 0, 50)
+    headerFrame.Size = UDim2.new(1, 0, 0, 60)
     headerFrame.Position = UDim2.new(0, 0, 0, 0)
-    headerFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 40)
+    headerFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     headerFrame.BorderSizePixel = 0
     headerFrame.Parent = mainFrame
     
     local headerCorner = Instance.new("UICorner")
-    headerCorner.CornerRadius = UDim.new(0, 12)
+    headerCorner.CornerRadius = UDim.new(0, 15)
     headerCorner.Parent = headerFrame
     
     local headerGradient = Instance.new("UIGradient")
     headerGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 35, 50)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 25, 40))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 35, 65)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(15, 25, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 40, 70))
     }
     headerGradient.Rotation = 90
     headerGradient.Parent = headerFrame
     
-    -- Title with modern font
+    -- Add neon border to header
+    local headerStroke = Instance.new("UIStroke")
+    headerStroke.Color = Color3.fromRGB(0, 150, 255)
+    headerStroke.Thickness = 2
+    headerStroke.Transparency = 0.6
+    headerStroke.Parent = headerFrame
+    
+    -- Title with neon glow
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -20, 1, 0)
-    titleLabel.Position = UDim2.new(0, 20, 0, 0)
+    titleLabel.Size = UDim2.new(1, -30, 1, 0)
+    titleLabel.Position = UDim2.new(0, 25, 0, 0)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = "TWEEN GENERATOR PRO"
-    titleLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
-    titleLabel.TextScaled = true
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextSize = 18
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Parent = headerFrame
     
-    -- Create modern scroll frame
+    -- Add neon glow to title
+    local titleGlow = Instance.new("UIStroke")
+    titleGlow.Color = Color3.fromRGB(0, 200, 255)
+    titleGlow.Thickness = 1
+    titleGlow.Transparency = 0.3
+    titleGlow.Parent = titleLabel
+    
+    -- Create modern scroll frame with proper positioning
     local scrollFrame = Instance.new("ScrollingFrame")
     scrollFrame.Name = "ScrollFrame"
-    scrollFrame.Size = UDim2.new(1, -20, 1, -70)
-    scrollFrame.Position = UDim2.new(0, 10, 0, 60)
+    scrollFrame.Size = UDim2.new(1, -20, 1, -80)
+    scrollFrame.Position = UDim2.new(0, 10, 0, 70)
     scrollFrame.BackgroundTransparency = 1
-    scrollFrame.ScrollBarThickness = 6
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1400)
-    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 150, 255)
+    scrollFrame.ScrollBarThickness = 8
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1600)
+    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
     scrollFrame.Parent = mainFrame
     
     -- Create sections
@@ -434,7 +527,80 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
         self:RefreshSelectedObject()
     end)
     
-    section.Size = UDim2.new(1, -20, 0, 80)
+    -- Add info panel showing supported object types
+    local infoButton = Instance.new("TextButton")
+    infoButton.Size = UDim2.new(0, 30, 0, 30)
+    infoButton.Position = UDim2.new(1, -40, 0, 70)
+    infoButton.BackgroundColor3 = Color3.fromRGB(40, 120, 200)
+    infoButton.BorderSizePixel = 0
+    infoButton.Text = "ℹ️"
+    infoButton.TextSize = 16
+    infoButton.Parent = section
+    
+    local infoCorner = Instance.new("UICorner")
+    infoCorner.CornerRadius = UDim.new(0, 15)
+    infoCorner.Parent = infoButton
+    
+    -- Info tooltip
+    local infoTooltip = Instance.new("Frame")
+    infoTooltip.Size = UDim2.new(0, 320, 0, 200)
+    infoTooltip.Position = UDim2.new(1, -330, 0, 0)
+    infoTooltip.BackgroundColor3 = Color3.fromRGB(25, 30, 45)
+    infoTooltip.BorderSizePixel = 0
+    infoTooltip.Visible = false
+    infoTooltip.Parent = infoButton
+    
+    local tooltipCorner = Instance.new("UICorner")
+    tooltipCorner.CornerRadius = UDim.new(0, 10)
+    tooltipCorner.Parent = infoTooltip
+    
+    local tooltipStroke = Instance.new("UIStroke")
+    tooltipStroke.Color = Color3.fromRGB(100, 150, 255)
+    tooltipStroke.Thickness = 2
+    tooltipStroke.Transparency = 0.6
+    tooltipStroke.Parent = infoTooltip
+    
+    local infoText = Instance.new("TextLabel")
+    infoText.Size = UDim2.new(1, -20, 1, -20)
+    infoText.Position = UDim2.new(0, 10, 0, 10)
+    infoText.BackgroundTransparency = 1
+    infoText.Text = [[✨ SUPPORTED OBJECTS ✨
+
+🧱 PARTS & MODELS
+• Position, Size, Orientation, Transparency
+• Color, Reflectance, Material
+
+🎛️ UI ELEMENTS  
+• Position, Size, Rotation
+• All Transparency & Color properties
+• TextSize, BackgroundColor3, TextColor3
+
+💡 LIGHTING & EFFECTS
+• PointLight, SpotLight: Brightness, Range, Color
+• BloomEffect: Intensity, Size, Threshold  
+• BlurEffect: Size
+• ColorCorrection: Brightness, Contrast, etc.
+
+🔊 SOUNDS
+• Volume, PlaybackSpeed, Pitch
+
+⚠️ Smart warnings detect common issues!]]
+    infoText.TextColor3 = Color3.fromRGB(200, 220, 255)
+    infoText.TextSize = 11
+    infoText.Font = Enum.Font.Gotham
+    infoText.TextXAlignment = Enum.TextXAlignment.Left
+    infoText.TextYAlignment = Enum.TextYAlignment.Top
+    infoText.Parent = infoTooltip
+    
+    infoButton.MouseEnter:Connect(function()
+        infoTooltip.Visible = true
+    end)
+    
+    infoButton.MouseLeave:Connect(function()
+        infoTooltip.Visible = false
+    end)
+    
+    section.Size = UDim2.new(1, -20, 0, 110)
 end
 
 function TweenGeneratorUI:CreatePropertySection(parent)
@@ -743,51 +909,51 @@ end
 function TweenGeneratorUI:CreateSection(title, parent, yOffset)
     local section = Instance.new("Frame")
     section.Name = title .. "Section"
-    section.Size = UDim2.new(1, -20, 0, 100)
+    section.Size = UDim2.new(1, -20, 0, 120)
     section.Position = UDim2.new(0, 10, 0, yOffset)
-    section.BackgroundColor3 = Color3.fromRGB(25, 30, 45)
+    section.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
     section.BorderSizePixel = 0
     section.Parent = parent
     
-    -- Modern gradient background
+    -- Blue gradient background
     local sectionGradient = Instance.new("UIGradient")
     sectionGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 40, 60)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 30, 45)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 25, 40))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(15, 25, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
     }
     sectionGradient.Rotation = 90
     sectionGradient.Parent = section
     
-    -- Add corner radius and border
+    -- Add corner radius and neon border
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
+    corner.CornerRadius = UDim.new(0, 15)
     corner.Parent = section
     
-    -- Subtle border/stroke effect
+    -- Neon border effect
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(60, 80, 120)
-    stroke.Thickness = 1
-    stroke.Transparency = 0.7
+    stroke.Color = Color3.fromRGB(0, 150, 255)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.5
     stroke.Parent = section
     
-    -- Modern title with glow effect
+    -- Modern title with neon glow
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -20, 0, 30)
-    titleLabel.Position = UDim2.new(0, 15, 0, 8)
+    titleLabel.Size = UDim2.new(1, -25, 0, 35)
+    titleLabel.Position = UDim2.new(0, 20, 0, 10)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title:upper()
-    titleLabel.TextColor3 = Color3.fromRGB(180, 200, 255)
-    titleLabel.TextSize = 14
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.TextSize = 16
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Parent = section
     
-    -- Add subtle glow to title
+    -- Add neon glow to title
     local titleStroke = Instance.new("UIStroke")
-    titleStroke.Color = Color3.fromRGB(100, 150, 255)
-    titleStroke.Thickness = 0.5
-    titleStroke.Transparency = 0.8
+    titleStroke.Color = Color3.fromRGB(0, 200, 255)
+    titleStroke.Thickness = 1
+    titleStroke.Transparency = 0.4
     titleStroke.Parent = titleLabel
     
     return section
@@ -967,6 +1133,47 @@ function TweenGeneratorUI:UpdateSlider(handle, fill, display, value, minValue, m
     display.Text = string.format("%.2f", value)
 end
 
+function TweenGeneratorUI:CheckPropertyWarnings(targetObject, propertyName)
+    if not targetObject then return nil end
+    
+    local className = targetObject.ClassName
+    
+    -- Part anchoring warnings
+    if targetObject:IsA("BasePart") and (propertyName == "Position" or propertyName == "Size" or propertyName == "Orientation") then
+        if not targetObject.Anchored then
+            return "⚠️ Part is not anchored! Tweening may not work as expected. Consider setting Anchored = true."
+        end
+    end
+    
+    -- CanCollide warnings for moving parts
+    if targetObject:IsA("BasePart") and propertyName == "Position" then
+        if targetObject.CanCollide then
+            return "💡 Part has CanCollide enabled. Consider disabling during movement to prevent physics conflicts."
+        end
+    end
+    
+    -- Sound warnings
+    if className == "Sound" and propertyName == "Volume" then
+        if not targetObject.IsPlaying then
+            return "🔊 Sound is not playing. Start the sound before tweening volume for best results."
+        end
+    end
+    
+    -- Transparency warnings
+    if propertyName:find("Transparency") and targetObject[propertyName] == 1 then
+        return "👁️ Object is fully transparent. Tween may not be visible unless changing to lower transparency."
+    end
+    
+    -- Lighting warnings
+    if targetObject:IsA("Light") and propertyName == "Brightness" then
+        if targetObject.Brightness == 0 then
+            return "💡 Light brightness is 0. Increase brightness to see lighting effects."
+        end
+    end
+    
+    return nil -- No warnings
+end
+
 function TweenGeneratorUI:ConnectEvents()
     -- Auto-refresh selection
     Selection.SelectionChanged:Connect(function()
@@ -1064,6 +1271,44 @@ function TweenGeneratorUI:CreatePropertyEditor(propertyName, propertyInfo, yPos)
     propertyLabel.Font = Enum.Font.GothamBold
     propertyLabel.Parent = self.propertyFrame
     
+    -- Add warning indicators for important properties
+    local warning = self:CheckPropertyWarnings(targetObject, propertyName)
+    if warning then
+        local warningIcon = Instance.new("TextLabel")
+        warningIcon.Size = UDim2.new(0, 20, 0, 25)
+        warningIcon.Position = UDim2.new(0.28, 0, 0, yPos)
+        warningIcon.BackgroundTransparency = 1
+        warningIcon.Text = "⚠️"
+        warningIcon.TextSize = 12
+        warningIcon.Parent = self.propertyFrame
+        
+        -- Tooltip for warning
+        local tooltip = Instance.new("TextLabel")
+        tooltip.Size = UDim2.new(0, 200, 0, 30)
+        tooltip.Position = UDim2.new(0, 50, 0, 0)
+        tooltip.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+        tooltip.BorderSizePixel = 0
+        tooltip.Text = warning
+        tooltip.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tooltip.TextSize = 10
+        tooltip.Font = Enum.Font.Gotham
+        tooltip.TextWrapped = true
+        tooltip.Visible = false
+        tooltip.Parent = warningIcon
+        
+        local tooltipCorner = Instance.new("UICorner")
+        tooltipCorner.CornerRadius = UDim.new(0, 6)
+        tooltipCorner.Parent = tooltip
+        
+        warningIcon.MouseEnter:Connect(function()
+            tooltip.Visible = true
+        end)
+        
+        warningIcon.MouseLeave:Connect(function()
+            tooltip.Visible = false
+        end)
+    end
+    
     -- Modern status indicator
     local statusIndicator = Instance.new("TextLabel")
     statusIndicator.Name = propertyName .. "Status"
@@ -1093,67 +1338,76 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
     local inputs = {"X", "Y", "Z"}
     local values = {currentValue.X, currentValue.Y, currentValue.Z}
     local colors = {
-        Color3.fromRGB(255, 100, 100), -- Red for X
-        Color3.fromRGB(100, 255, 100), -- Green for Y  
-        Color3.fromRGB(100, 150, 255)  -- Blue for Z
+        Color3.fromRGB(255, 80, 120), -- Neon Red for X
+        Color3.fromRGB(80, 255, 120), -- Neon Green for Y  
+        Color3.fromRGB(80, 150, 255)  -- Neon Blue for Z
     }
     
-    -- Create input fields with modern styling
+    -- Create input fields with blue/neon styling and better spacing
     for i, component in ipairs(inputs) do
-        -- Component label
+        -- Component label with better positioning
         local componentLabel = Instance.new("TextLabel")
-        componentLabel.Size = UDim2.new(0.2, -5, 0, 12)
-        componentLabel.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos - 15)
+        componentLabel.Size = UDim2.new(0.18, -5, 0, 15)
+        componentLabel.Position = UDim2.new(0.32 + (i-1) * 0.22, 0, 0, yPos - 18)
         componentLabel.BackgroundTransparency = 1
         componentLabel.Text = component
         componentLabel.TextColor3 = colors[i]
-        componentLabel.TextSize = 11
+        componentLabel.TextSize = 13
         componentLabel.TextXAlignment = Enum.TextXAlignment.Center
         componentLabel.Font = Enum.Font.GothamBold
         componentLabel.Parent = self.propertyFrame
         
-        -- Modern input field
+        -- Modern input field with blue theme
         local input = Instance.new("TextBox")
         input.Name = propertyName .. component
-        input.Size = UDim2.new(0.2, -5, 0, 25)
-        input.Position = UDim2.new(0.3 + (i-1) * 0.23, 0, 0, yPos)
-        input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+        input.Size = UDim2.new(0.18, -5, 0, 28)
+        input.Position = UDim2.new(0.32 + (i-1) * 0.22, 0, 0, yPos)
+        input.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
         input.BorderSizePixel = 0
         input.Text = string.format("%.2f", values[i])
-        input.TextColor3 = Color3.fromRGB(200, 220, 255)
-        input.TextSize = 12
+        input.TextColor3 = Color3.fromRGB(255, 255, 255)
+        input.TextSize = 13
         input.Font = Enum.Font.GothamMedium
         input.TextXAlignment = Enum.TextXAlignment.Center
         input.Parent = self.propertyFrame
         
-        -- Modern styling
+        -- Add gradient background
+        local inputGradient = Instance.new("UIGradient")
+        inputGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 30, 60)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+        }
+        inputGradient.Rotation = 90
+        inputGradient.Parent = input
+        
+        -- Modern styling with neon borders
         local inputCorner = Instance.new("UICorner")
-        inputCorner.CornerRadius = UDim.new(0, 6)
+        inputCorner.CornerRadius = UDim.new(0, 8)
         inputCorner.Parent = input
         
         local inputStroke = Instance.new("UIStroke")
         inputStroke.Color = colors[i]
-        inputStroke.Thickness = 1
-        inputStroke.Transparency = 0.8
+        inputStroke.Thickness = 2
+        inputStroke.Transparency = 0.6
         inputStroke.Parent = input
         
-        -- Focus effects
+        -- Enhanced focus effects
         input.Focused:Connect(function()
-            inputStroke.Transparency = 0.4
-            input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+            inputStroke.Transparency = 0.2
+            input.BackgroundColor3 = Color3.fromRGB(25, 35, 65)
         end)
         
         input.FocusLost:Connect(function()
-            inputStroke.Transparency = 0.8
-            input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+            inputStroke.Transparency = 0.6
+            input.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
             self:UpdatePropertyValue(propertyName, "Vector3")
         end)
     end
     
-    -- Add preset buttons
+    -- Add preset buttons with blue/neon styling
     local presetFrame = Instance.new("Frame")
-    presetFrame.Size = UDim2.new(0.6, -10, 0, 20)
-    presetFrame.Position = UDim2.new(0.3, 0, 0, yPos + 30)
+    presetFrame.Size = UDim2.new(0.66, -10, 0, 25)
+    presetFrame.Position = UDim2.new(0.32, 0, 0, yPos + 35)
     presetFrame.BackgroundTransparency = 1
     presetFrame.Parent = self.propertyFrame
     
@@ -1183,19 +1437,35 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
     
     for i, preset in ipairs(presets) do
         local presetBtn = Instance.new("TextButton")
-        presetBtn.Size = UDim2.new(0.23, 0, 1, 0)
-        presetBtn.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
-        presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+        presetBtn.Size = UDim2.new(0.22, -2, 1, 0)
+        presetBtn.Position = UDim2.new((i-1) * 0.25, 1, 0, 0)
+        presetBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
         presetBtn.BorderSizePixel = 0
         presetBtn.Text = preset.name
-        presetBtn.TextColor3 = Color3.fromRGB(160, 180, 220)
-        presetBtn.TextSize = 9
+        presetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        presetBtn.TextSize = 10
         presetBtn.Font = Enum.Font.Gotham
         presetBtn.Parent = presetFrame
         
+        -- Add gradient background
+        local btnGradient = Instance.new("UIGradient")
+        btnGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 35, 65)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 40))
+        }
+        btnGradient.Rotation = 90
+        btnGradient.Parent = presetBtn
+        
         local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.CornerRadius = UDim.new(0, 6)
         btnCorner.Parent = presetBtn
+        
+        -- Add neon border
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.Color = Color3.fromRGB(0, 150, 255)
+        btnStroke.Thickness = 1
+        btnStroke.Transparency = 0.6
+        btnStroke.Parent = presetBtn
         
         presetBtn.MouseButton1Click:Connect(function()
             -- Update input fields properly
@@ -1212,17 +1482,19 @@ function TweenGeneratorUI:CreateVector3Editor(propertyName, currentValue, yPos)
             self:UpdatePropertyStatus(propertyName, true)
         end)
         
-        -- Hover effects
+        -- Enhanced hover effects
         presetBtn.MouseEnter:Connect(function()
-            presetBtn.BackgroundColor3 = Color3.fromRGB(60, 80, 120)
+            presetBtn.BackgroundColor3 = Color3.fromRGB(25, 40, 70)
+            btnStroke.Transparency = 0.3
         end)
         
         presetBtn.MouseLeave:Connect(function()
-            presetBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 70)
+            presetBtn.BackgroundColor3 = Color3.fromRGB(15, 25, 50)
+            btnStroke.Transparency = 0.6
         end)
     end
     
-    return yPos + 55
+    return yPos + 70
 end
 
 function TweenGeneratorUI:CreateUDim2Editor(propertyName, currentValue, yPos)
@@ -1442,44 +1714,159 @@ function TweenGeneratorUI:CreateColor3Editor(propertyName, currentValue, yPos)
 end
 
 function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propertyInfo, yPos)
-    -- Modern number input with better styling
-    local input = Instance.new("TextBox")
-    input.Name = propertyName .. "Value"
-    input.Size = UDim2.new(0.6, -10, 0, 30)
-    input.Position = UDim2.new(0.3, 0, 0, yPos)
-    input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
-    input.BorderSizePixel = 0
-    input.Text = string.format("%.3f", currentValue)
-    input.TextColor3 = Color3.fromRGB(200, 220, 255)
-    input.TextSize = 14
-    input.Font = Enum.Font.GothamMedium
-    input.TextXAlignment = Enum.TextXAlignment.Center
-    input.Parent = self.propertyFrame
+    local minValue = propertyInfo.min or 0
+    local maxValue = propertyInfo.max or (currentValue * 2 > 10 and currentValue * 2 or 10)
+    local hasRange = propertyInfo.min and propertyInfo.max
     
-    -- Modern styling
-    local inputCorner = Instance.new("UICorner")
-    inputCorner.CornerRadius = UDim.new(0, 8)
-    inputCorner.Parent = input
+    -- Create container for the property
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -40, 0, hasRange and 75 or 40)
+    container.Position = UDim2.new(0, 30, 0, yPos)
+    container.BackgroundTransparency = 1
+    container.Parent = self.propertyFrame
     
-    local inputStroke = Instance.new("UIStroke")
-    inputStroke.Color = Color3.fromRGB(100, 150, 255)
-    inputStroke.Thickness = 1
-    inputStroke.Transparency = 0.8
-    inputStroke.Parent = input
-    
-    -- Focus effects
-    input.Focused:Connect(function()
-        inputStroke.Transparency = 0.4
-        input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
-    end)
-    
-    input.FocusLost:Connect(function()
-        inputStroke.Transparency = 0.8
+    if hasRange then
+        -- Use slider control for properties with defined ranges
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -20, 0, 20)
+        label.Position = UDim2.new(0, 10, 0, 0)
+        label.BackgroundTransparency = 1
+        label.Text = string.format("%s (%.2f - %.2f)", propertyName:upper(), minValue, maxValue)
+        label.TextColor3 = Color3.fromRGB(160, 180, 220)
+        label.TextSize = 11
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.Font = Enum.Font.Gotham
+        label.Parent = container
+        
+        -- Slider track
+        local sliderTrack = Instance.new("Frame")
+        sliderTrack.Size = UDim2.new(0.7, -10, 0, 6)
+        sliderTrack.Position = UDim2.new(0, 10, 0, 30)
+        sliderTrack.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+        sliderTrack.BorderSizePixel = 0
+        sliderTrack.Parent = container
+        
+        local trackCorner = Instance.new("UICorner")
+        trackCorner.CornerRadius = UDim.new(0, 3)
+        trackCorner.Parent = sliderTrack
+        
+        -- Slider fill
+        local sliderFill = Instance.new("Frame")
+        sliderFill.Size = UDim2.new((currentValue - minValue) / (maxValue - minValue), 0, 1, 0)
+        sliderFill.Position = UDim2.new(0, 0, 0, 0)
+        sliderFill.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+        sliderFill.BorderSizePixel = 0
+        sliderFill.Parent = sliderTrack
+        
+        local fillCorner = Instance.new("UICorner")
+        fillCorner.CornerRadius = UDim.new(0, 3)
+        fillCorner.Parent = sliderFill
+        
+        -- Slider handle
+        local sliderHandle = Instance.new("TextButton")
+        sliderHandle.Size = UDim2.new(0, 16, 0, 16)
+        sliderHandle.Position = UDim2.new((currentValue - minValue) / (maxValue - minValue), -8, 0, -5)
+        sliderHandle.BackgroundColor3 = Color3.fromRGB(150, 180, 255)
+        sliderHandle.BorderSizePixel = 0
+        sliderHandle.Text = ""
+        sliderHandle.Parent = sliderTrack
+        
+        local handleCorner = Instance.new("UICorner")
+        handleCorner.CornerRadius = UDim.new(0, 8)
+        handleCorner.Parent = sliderHandle
+        
+        -- Value display
+        local valueDisplay = Instance.new("TextLabel")
+        valueDisplay.Name = propertyName .. "Value"
+        valueDisplay.Size = UDim2.new(0, 80, 0, 30)
+        valueDisplay.Position = UDim2.new(0.7, 5, 0, 22.5)
+        valueDisplay.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+        valueDisplay.BorderSizePixel = 0
+        valueDisplay.Text = string.format("%.3f", currentValue)
+        valueDisplay.TextColor3 = Color3.fromRGB(200, 220, 255)
+        valueDisplay.TextSize = 12
+        valueDisplay.Font = Enum.Font.GothamMedium
+        valueDisplay.TextXAlignment = Enum.TextXAlignment.Center
+        valueDisplay.Parent = container
+        
+        local displayCorner = Instance.new("UICorner")
+        displayCorner.CornerRadius = UDim.new(0, 6)
+        displayCorner.Parent = valueDisplay
+        
+        -- Slider functionality
+        local dragging = false
+        local function updateSliderValue(inputObject)
+            if not dragging then return end
+            
+            local relativeX = (inputObject.Position.X - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
+            relativeX = math.clamp(relativeX, 0, 1)
+            
+            local newValue = minValue + (maxValue - minValue) * relativeX
+            newValue = math.round(newValue * 1000) / 1000 -- Round to 3 decimal places
+            
+            -- Update display and slider
+            valueDisplay.Text = string.format("%.3f", newValue)
+            sliderHandle.Position = UDim2.new(relativeX, -8, 0, -5)
+            sliderFill.Size = UDim2.new(relativeX, 0, 1, 0)
+            
+            -- Update property
+            self.endProperties[propertyName] = newValue
+            self:UpdatePropertyStatus(propertyName, true)
+        end
+        
+        sliderHandle.MouseButton1Down:Connect(function()
+            dragging = true
+        end)
+        
+        game:GetService("UserInputService").InputChanged:Connect(updateSliderValue)
+        
+        game:GetService("UserInputService").InputEnded:Connect(function(inputObject)
+            if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+        
+        return yPos + 85
+    else
+        -- Use text input for properties without defined ranges
+        local input = Instance.new("TextBox")
+        input.Name = propertyName .. "Value"
+        input.Size = UDim2.new(0.7, -10, 0, 30)
+        input.Position = UDim2.new(0, 10, 0, 5)
         input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
-        self:UpdatePropertyValue(propertyName, "number")
-    end)
-    
-    return yPos + 40
+        input.BorderSizePixel = 0
+        input.Text = string.format("%.3f", currentValue)
+        input.TextColor3 = Color3.fromRGB(200, 220, 255)
+        input.TextSize = 14
+        input.Font = Enum.Font.GothamMedium
+        input.TextXAlignment = Enum.TextXAlignment.Center
+        input.Parent = container
+        
+        -- Modern styling
+        local inputCorner = Instance.new("UICorner")
+        inputCorner.CornerRadius = UDim.new(0, 8)
+        inputCorner.Parent = input
+        
+        local inputStroke = Instance.new("UIStroke")
+        inputStroke.Color = Color3.fromRGB(100, 150, 255)
+        inputStroke.Thickness = 1
+        inputStroke.Transparency = 0.8
+        inputStroke.Parent = input
+        
+        -- Focus effects
+        input.Focused:Connect(function()
+            inputStroke.Transparency = 0.4
+            input.BackgroundColor3 = Color3.fromRGB(40, 45, 65)
+        end)
+        
+        input.FocusLost:Connect(function()
+            inputStroke.Transparency = 0.8
+            input.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
+            self:UpdatePropertyValue(propertyName, "number")
+        end)
+        
+        return yPos + 50
+    end
 end
 
 function TweenGeneratorUI:UpdatePropertyValue(propertyName, valueType)
