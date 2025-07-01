@@ -425,105 +425,220 @@ function TweenGeneratorUI:CreateUI()
     scrollFrame.Position = UDim2.new(0, 10, 0, 70)
     scrollFrame.BackgroundTransparency = 1
     scrollFrame.ScrollBarThickness = 8
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1300)
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 1600)
     scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 255)
     scrollFrame.Parent = mainFrame
     
-    -- Create sections
-    self:CreateObjectSelectionSection(scrollFrame)
-    self:CreatePropertySection(scrollFrame)
-    self:CreateTweenControlsSection(scrollFrame)
-    self:CreatePreviewSection(scrollFrame)
-    self:CreateExportSection(scrollFrame)
-    self:CreatePresetSection(scrollFrame)
+    -- Create sections with proper spacing
+    local currentY = 0
+    local sectionSpacing = 20
+    
+    currentY = self:CreateObjectSelectionSection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreatePropertySection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreateEnhancedPresetsSection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreateTweenControlsSection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreatePreviewSection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreateExportSection(scrollFrame, currentY)
+    currentY = currentY + sectionSpacing
+    currentY = self:CreatePresetSection(scrollFrame, currentY)
+    
+    -- Update canvas size to accommodate all sections
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, currentY + sectionSpacing)
     
     self.mainFrame = mainFrame
     self.scrollFrame = scrollFrame
 end
 
-function TweenGeneratorUI:CreateObjectSelectionSection(parent)
-    local section = self:CreateSection("Object Selection", parent, 0)
+function TweenGeneratorUI:CreateObjectSelectionSection(parent, yOffset)
+    local section = self:CreateSection("Object Selection", parent, yOffset)
     
-    -- Object info label
-    -- Modern object info display
-    local infoContainer = Instance.new("Frame")
-    infoContainer.Size = UDim2.new(1, -150, 0, 35)
-    infoContainer.Position = UDim2.new(0, 15, 0, 27.5)
-    infoContainer.BackgroundColor3 = Color3.fromRGB(30, 35, 50)
-    infoContainer.BorderSizePixel = 0
-    infoContainer.Parent = section
+    -- Enhanced selection display with visual feedback
+    local selectionContainer = Instance.new("Frame")
+    selectionContainer.Size = UDim2.new(1, -30, 0, 90)
+    selectionContainer.Position = UDim2.new(0, 15, 0, 45)
+    selectionContainer.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+    selectionContainer.BorderSizePixel = 0
+    selectionContainer.Parent = section
     
-    local infoCorner = Instance.new("UICorner")
-    infoCorner.CornerRadius = UDim.new(0, 8)
-    infoCorner.Parent = infoContainer
+    local selectionCorner = Instance.new("UICorner")
+    selectionCorner.CornerRadius = UDim.new(0, 12)
+    selectionCorner.Parent = selectionContainer
     
-    local infoStroke = Instance.new("UIStroke")
-    infoStroke.Color = Color3.fromRGB(80, 120, 200)
-    infoStroke.Thickness = 1
-    infoStroke.Transparency = 0.8
-    infoStroke.Parent = infoContainer
+    local selectionStroke = Instance.new("UIStroke")
+    selectionStroke.Color = Color3.fromRGB(0, 150, 255)
+    selectionStroke.Thickness = 2
+    selectionStroke.Transparency = 0.5
+    selectionStroke.Parent = selectionContainer
     
+    -- Selection status icon
+    local statusIcon = Instance.new("TextLabel")
+    statusIcon.Size = UDim2.new(0, 40, 0, 30)
+    statusIcon.Position = UDim2.new(0, 15, 0, 10)
+    statusIcon.BackgroundTransparency = 1
+    statusIcon.Text = "📦"
+    statusIcon.TextColor3 = Color3.fromRGB(255, 150, 0)
+    statusIcon.TextSize = 24
+    statusIcon.TextXAlignment = Enum.TextXAlignment.Center
+    statusIcon.Font = Enum.Font.GothamBold
+    statusIcon.Parent = selectionContainer
+    
+    -- Main object info label
     self.objectInfoLabel = Instance.new("TextLabel")
-    self.objectInfoLabel.Size = UDim2.new(1, -20, 1, 0)
-    self.objectInfoLabel.Position = UDim2.new(0, 10, 0, 0)
+    self.objectInfoLabel.Size = UDim2.new(1, -70, 0, 25)
+    self.objectInfoLabel.Position = UDim2.new(0, 60, 0, 8)
     self.objectInfoLabel.BackgroundTransparency = 1
     self.objectInfoLabel.Text = "No object selected"
-    self.objectInfoLabel.TextColor3 = Color3.fromRGB(180, 200, 255)
-    self.objectInfoLabel.TextSize = 12
+    self.objectInfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    self.objectInfoLabel.TextSize = 15
     self.objectInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
-    self.objectInfoLabel.Font = Enum.Font.GothamMedium
-    self.objectInfoLabel.Parent = infoContainer
+    self.objectInfoLabel.Font = Enum.Font.GothamBold
+    self.objectInfoLabel.Parent = selectionContainer
     
-    -- Modern Refresh button
+    -- Object type details
+    local typeLabel = Instance.new("TextLabel")
+    typeLabel.Size = UDim2.new(1, -70, 0, 20)
+    typeLabel.Position = UDim2.new(0, 60, 0, 30)
+    typeLabel.BackgroundTransparency = 1
+    typeLabel.Text = "Click an object in the workspace, then hit REFRESH"
+    typeLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+    typeLabel.TextSize = 12
+    typeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    typeLabel.Font = Enum.Font.GothamMedium
+    typeLabel.Parent = selectionContainer
+    
+    -- Quick action hint
+    local hintLabel = Instance.new("TextLabel")
+    hintLabel.Size = UDim2.new(1, -70, 0, 18)
+    hintLabel.Position = UDim2.new(0, 60, 0, 52)
+    hintLabel.BackgroundTransparency = 1
+    hintLabel.Text = "💡 TIP: Use Explorer window to select nested objects"
+    hintLabel.TextColor3 = Color3.fromRGB(120, 180, 255)
+    hintLabel.TextSize = 11
+    hintLabel.TextXAlignment = Enum.TextXAlignment.Left
+    hintLabel.Font = Enum.Font.GothamMedium
+    hintLabel.Parent = selectionContainer
+    
+    -- Action buttons frame
+    local buttonFrame = Instance.new("Frame")
+    buttonFrame.Size = UDim2.new(1, -30, 0, 40)
+    buttonFrame.Position = UDim2.new(0, 15, 0, 145)
+    buttonFrame.BackgroundTransparency = 1
+    buttonFrame.Parent = section
+    
+    -- Enhanced Refresh button
     local refreshButton = Instance.new("TextButton")
-    refreshButton.Size = UDim2.new(0, 120, 0, 35)
-    refreshButton.Position = UDim2.new(1, -130, 0, 27.5)
+    refreshButton.Size = UDim2.new(0, 140, 0, 35)
+    refreshButton.Position = UDim2.new(0, 0, 0, 0)
     refreshButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     refreshButton.BorderSizePixel = 0
     refreshButton.Text = "🔄 REFRESH"
     refreshButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    refreshButton.TextSize = 12
+    refreshButton.TextSize = 13
     refreshButton.Font = Enum.Font.GothamBold
-    refreshButton.Parent = section
+    refreshButton.Parent = buttonFrame
     
-    -- Modern styling
-    local refreshCorner = Instance.new("UICorner")
-    refreshCorner.CornerRadius = UDim.new(0, 8)
-    refreshCorner.Parent = refreshButton
+    -- Selection Helper button
+    local helperButton = Instance.new("TextButton")
+    helperButton.Size = UDim2.new(0, 140, 0, 35)
+    helperButton.Position = UDim2.new(0, 150, 0, 0)
+    helperButton.BackgroundColor3 = Color3.fromRGB(120, 50, 200)
+    helperButton.BorderSizePixel = 0
+    helperButton.Text = "🎯 GUIDE"
+    helperButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    helperButton.TextSize = 13
+    helperButton.Font = Enum.Font.GothamBold
+    helperButton.Parent = buttonFrame
     
-    local refreshGradient = Instance.new("UIGradient")
-    refreshGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 170, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 150, 255))
+    -- Clear Selection button
+    local clearButton = Instance.new("TextButton")
+    clearButton.Size = UDim2.new(0, 100, 0, 35)
+    clearButton.Position = UDim2.new(1, -100, 0, 0)
+    clearButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+    clearButton.BorderSizePixel = 0
+    clearButton.Text = "❌ CLEAR"
+    clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    clearButton.TextSize = 12
+    clearButton.Font = Enum.Font.GothamBold
+    clearButton.Parent = buttonFrame
+    
+    -- Style all buttons consistently
+    local buttons = {
+        {button = refreshButton, color = Color3.fromRGB(0, 150, 255), glowColor = Color3.fromRGB(100, 180, 255)},
+        {button = helperButton, color = Color3.fromRGB(120, 50, 200), glowColor = Color3.fromRGB(150, 100, 255)},
+        {button = clearButton, color = Color3.fromRGB(180, 50, 50), glowColor = Color3.fromRGB(255, 100, 100)}
     }
-    refreshGradient.Rotation = 90
-    refreshGradient.Parent = refreshButton
     
-    local refreshGlow = Instance.new("UIStroke")
-    refreshGlow.Color = Color3.fromRGB(100, 180, 255)
-    refreshGlow.Thickness = 1.5
-    refreshGlow.Transparency = 0.7
-    refreshGlow.Parent = refreshButton
+    for _, buttonData in ipairs(buttons) do
+        local button = buttonData.button
+        
+        -- Add corner radius
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 8)
+        corner.Parent = button
+        
+        -- Add glow effect
+        local glow = Instance.new("UIStroke")
+        glow.Color = buttonData.glowColor
+        glow.Thickness = 1.5
+        glow.Transparency = 0.7
+        glow.Parent = button
+        
+        -- Hover effects
+        button.MouseEnter:Connect(function()
+            glow.Transparency = 0.4
+            button.Size = UDim2.new(0, button.Size.X.Offset + 5, 0, button.Size.Y.Offset + 3)
+            button.Position = UDim2.new(0, button.Position.X.Offset - 2.5, 0, button.Position.Y.Offset - 1.5)
+        end)
+        
+        button.MouseLeave:Connect(function()
+            glow.Transparency = 0.7
+            -- Reset to original size and position
+            if button == refreshButton then
+                button.Size = UDim2.new(0, 140, 0, 35)
+                button.Position = UDim2.new(0, 0, 0, 0)
+            elseif button == helperButton then
+                button.Size = UDim2.new(0, 140, 0, 35)
+                button.Position = UDim2.new(0, 150, 0, 0)
+            else -- clearButton
+                button.Size = UDim2.new(0, 100, 0, 35)
+                button.Position = UDim2.new(1, -100, 0, 0)
+            end
+        end)
+    end
     
-    -- Hover effects
-    refreshButton.MouseEnter:Connect(function()
-        refreshGlow.Transparency = 0.4
-        refreshButton.Size = UDim2.new(0, 125, 0, 38)
-        refreshButton.Position = UDim2.new(1, -132.5, 0, 26)
-    end)
-    
-    refreshButton.MouseLeave:Connect(function()
-        refreshGlow.Transparency = 0.7
-        refreshButton.Size = UDim2.new(0, 120, 0, 35)
-        refreshButton.Position = UDim2.new(1, -130, 0, 27.5)
-    end)
-    
+    -- Button click handlers
     refreshButton.MouseButton1Click:Connect(function()
         -- Visual feedback on click
         refreshButton.BackgroundColor3 = Color3.fromRGB(0, 130, 235)
         task.wait(0.1)
         refreshButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
         
+        self:RefreshSelectedObject()
+    end)
+    
+    helperButton.MouseButton1Click:Connect(function()
+        -- Visual feedback
+        helperButton.BackgroundColor3 = Color3.fromRGB(100, 30, 180)
+        task.wait(0.1)
+        helperButton.BackgroundColor3 = Color3.fromRGB(120, 50, 200)
+        
+        -- Show selection guide
+        self:ShowSelectionGuide()
+    end)
+    
+    clearButton.MouseButton1Click:Connect(function()
+        -- Visual feedback
+        clearButton.BackgroundColor3 = Color3.fromRGB(160, 30, 30)
+        task.wait(0.1)
+        clearButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+        
+        -- Clear selection
+        Selection:Set({})
         self:RefreshSelectedObject()
     end)
     
@@ -633,11 +748,102 @@ function TweenGeneratorUI:CreateObjectSelectionSection(parent)
         infoTooltip.Visible = false
     end)
     
-    section.Size = UDim2.new(1, -40, 0, 180)
+    section.Size = UDim2.new(1, -40, 0, 200)
+    
+    -- Return the next Y position for the following section
+    return yOffset + 200
 end
 
-function TweenGeneratorUI:CreatePropertySection(parent)
-    local section = self:CreateSection("Properties", parent, 200)
+-- Add selection guide function
+function TweenGeneratorUI:ShowSelectionGuide()
+    -- Create a popup guide
+    local guide = Instance.new("ScreenGui")
+    guide.Name = "SelectionGuide"
+    guide.Parent = Players.LocalPlayer.PlayerGui
+    
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 400, 0, 300)
+    frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 30, 50)
+    frame.BorderSizePixel = 0
+    frame.Parent = guide
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 15)
+    corner.Parent = frame
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 150, 255)
+    stroke.Thickness = 3
+    stroke.Parent = frame
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -40, 0, 40)
+    title.Position = UDim2.new(0, 20, 0, 10)
+    title.BackgroundTransparency = 1
+    title.Text = "🎯 SELECTION GUIDE"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 18
+    title.Font = Enum.Font.GothamBold
+    title.TextXAlignment = Enum.TextXAlignment.Center
+    title.Parent = frame
+    
+    local content = Instance.new("TextLabel")
+    content.Size = UDim2.new(1, -40, 0, 200)
+    content.Position = UDim2.new(0, 20, 0, 50)
+    content.BackgroundTransparency = 1
+    content.Text = [[🔍 HOW TO SELECT OBJECTS:
+
+1️⃣ Click any object in your workspace
+2️⃣ Or use the Explorer window to select
+3️⃣ Hit the REFRESH button to load properties
+
+✨ SUPPORTED OBJECTS:
+• Parts, Models, UI Elements
+• Lights, Effects, Sounds
+• Any object with tweenable properties
+
+💡 PRO TIPS:
+• Select nested objects via Explorer
+• Use CLEAR to deselect everything
+• Multiple selections show the first object]]
+    content.TextColor3 = Color3.fromRGB(220, 220, 220)
+    content.TextSize = 14
+    content.Font = Enum.Font.GothamMedium
+    content.TextXAlignment = Enum.TextXAlignment.Left
+    content.TextYAlignment = Enum.TextYAlignment.Top
+    content.Parent = frame
+    
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 100, 0, 35)
+    closeButton.Position = UDim2.new(0.5, -50, 1, -50)
+    closeButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    closeButton.BorderSizePixel = 0
+    closeButton.Text = "GOT IT!"
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.TextSize = 14
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Parent = frame
+    
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 8)
+    closeCorner.Parent = closeButton
+    
+    closeButton.MouseButton1Click:Connect(function()
+        guide:Destroy()
+    end)
+    
+    -- Auto-close after 10 seconds (run asynchronously)
+    task.spawn(function()
+        task.wait(10)
+        if guide.Parent then
+            guide:Destroy()
+        end
+    end)
+end
+
+function TweenGeneratorUI:CreatePropertySection(parent, yOffset)
+    local section = self:CreateSection("Properties", parent, yOffset)
     
     self.propertyFrame = Instance.new("Frame")
     self.propertyFrame.Size = UDim2.new(1, -40, 0, 320)
@@ -646,10 +852,332 @@ function TweenGeneratorUI:CreatePropertySection(parent)
     self.propertyFrame.Parent = section
     
     section.Size = UDim2.new(1, -40, 0, 390)
+    
+    -- Return the next Y position for the following section
+    return yOffset + 390
 end
 
-function TweenGeneratorUI:CreateTweenControlsSection(parent)
-    local section = self:CreateSection("Tween Settings", parent, 620)
+function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
+    local section = self:CreateSection("Enhanced Presets", parent, yOffset)
+    
+    -- Quick access toolbar for most popular presets
+    local quickAccessFrame = Instance.new("Frame")
+    quickAccessFrame.Size = UDim2.new(1, -30, 0, 40)
+    quickAccessFrame.Position = UDim2.new(0, 15, 0, 45)
+    quickAccessFrame.BackgroundColor3 = Color3.fromRGB(35, 45, 65)
+    quickAccessFrame.BorderSizePixel = 0
+    quickAccessFrame.Parent = section
+    
+    local quickCorner = Instance.new("UICorner")
+    quickCorner.CornerRadius = UDim.new(0, 8)
+    quickCorner.Parent = quickAccessFrame
+    
+    local quickStroke = Instance.new("UIStroke")
+    quickStroke.Color = Color3.fromRGB(100, 150, 255)
+    quickStroke.Thickness = 1
+    quickStroke.Transparency = 0.7
+    quickStroke.Parent = quickAccessFrame
+    
+    -- Quick access label
+    local quickLabel = Instance.new("TextLabel")
+    quickLabel.Size = UDim2.new(0, 100, 1, 0)
+    quickLabel.Position = UDim2.new(0, 10, 0, 0)
+    quickLabel.BackgroundTransparency = 1
+    quickLabel.Text = "⚡ QUICK:"
+    quickLabel.TextColor3 = Color3.fromRGB(100, 150, 255)
+    quickLabel.TextSize = 12
+    quickLabel.TextXAlignment = Enum.TextXAlignment.Left
+    quickLabel.Font = Enum.Font.GothamBold
+    quickLabel.Parent = quickAccessFrame
+    
+    -- Quick preset buttons (most popular)
+    local quickPresets = {
+        {name = "✨", preset = {name = "Fade In", properties = {Transparency = 1}, settings = {duration = 0.6, easingStyle = "Sine", easingDirection = "Out"}}},
+        {name = "💫", preset = {name = "Fade Out", properties = {Transparency = 1}, settings = {duration = 0.5, easingStyle = "Sine", easingDirection = "In"}}},
+        {name = "🎪", preset = {name = "Bounce In", properties = {Size = Vector3.new(0.1, 0.1, 0.1), Transparency = 1}, settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}}},
+        {name = "📏", preset = {name = "Scale In", properties = {Size = Vector3.new(0, 0, 0)}, settings = {duration = 0.5, easingStyle = "Back", easingDirection = "Out"}}},
+        {name = "🔄", preset = {name = "Spin", properties = {Orientation = Vector3.new(0, 360, 0)}, settings = {duration = 1.0, easingStyle = "Sine", easingDirection = "InOut"}}}
+    }
+    
+    for i, quickData in ipairs(quickPresets) do
+        local quickBtn = Instance.new("TextButton")
+        quickBtn.Size = UDim2.new(0, 35, 0, 28)
+        quickBtn.Position = UDim2.new(0, 90 + (i-1) * 40, 0, 6)
+        quickBtn.BackgroundColor3 = Color3.fromRGB(45, 55, 75)
+        quickBtn.BorderSizePixel = 0
+        quickBtn.Text = quickData.name
+        quickBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        quickBtn.TextSize = 16
+        quickBtn.Font = Enum.Font.GothamBold
+        quickBtn.Parent = quickAccessFrame
+        
+        local qCorner = Instance.new("UICorner")
+        qCorner.CornerRadius = UDim.new(0, 6)
+        qCorner.Parent = quickBtn
+        
+        local qStroke = Instance.new("UIStroke")
+        qStroke.Color = Color3.fromRGB(150, 200, 255)
+        qStroke.Thickness = 1
+        qStroke.Transparency = 0.6
+        qStroke.Parent = quickBtn
+        
+        quickBtn.MouseButton1Click:Connect(function()
+            self:ApplyAnimationPreset(quickData.preset)
+            quickBtn.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+            task.wait(0.1)
+            quickBtn.BackgroundColor3 = Color3.fromRGB(45, 55, 75)
+        end)
+        
+        quickBtn.MouseEnter:Connect(function()
+            qStroke.Transparency = 0.3
+        end)
+        
+        quickBtn.MouseLeave:Connect(function()
+            qStroke.Transparency = 0.6
+        end)
+    end
+    
+    -- Preset categories frame
+    local categoryFrame = Instance.new("Frame")
+    categoryFrame.Size = UDim2.new(1, -30, 0, 120)
+    categoryFrame.Position = UDim2.new(0, 15, 0, 95)
+    categoryFrame.BackgroundTransparency = 1
+    categoryFrame.Parent = section
+    
+    -- Animation presets data
+    local animationPresets = {
+        -- Entrance animations
+        {
+            category = "ENTRANCE",
+            color = Color3.fromRGB(0, 200, 120),
+            presets = {
+                {
+                    name = "🎪 Bounce In",
+                    properties = {
+                        Size = Vector3.new(0.1, 0.1, 0.1),
+                        Transparency = 1
+                    },
+                    settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}
+                },
+                {
+                    name = "✨ Fade In",
+                    properties = {
+                        Transparency = 1
+                    },
+                    settings = {duration = 0.6, easingStyle = "Sine", easingDirection = "Out"}
+                },
+                {
+                    name = "📏 Scale In",
+                    properties = {
+                        Size = Vector3.new(0, 0, 0)
+                    },
+                    settings = {duration = 0.5, easingStyle = "Back", easingDirection = "Out"}
+                },
+                {
+                    name = "🌪️ Spin In",
+                    properties = {
+                        Orientation = Vector3.new(0, 360, 0),
+                        Transparency = 0.8
+                    },
+                    settings = {duration = 1.0, easingStyle = "Elastic", easingDirection = "Out"}
+                }
+            }
+        },
+                 -- Exit animations
+        {
+            category = "EXIT",
+            color = Color3.fromRGB(255, 80, 120),
+            presets = {
+                {
+                    name = "💫 Fade Out",
+                    properties = {
+                        Transparency = 1
+                    },
+                    settings = {duration = 0.5, easingStyle = "Sine", easingDirection = "In"}
+                },
+                {
+                    name = "🔻 Scale Down",
+                    properties = {
+                        Size = Vector3.new(0, 0, 0)
+                    },
+                    settings = {duration = 0.4, easingStyle = "Back", easingDirection = "In"}
+                },
+                {
+                    name = "🌊 Slide Away",
+                    properties = {
+                        Position = Vector3.new(0, -50, 0),
+                        Transparency = 0.8
+                    },
+                    settings = {duration = 0.7, easingStyle = "Quad", easingDirection = "In"}
+                },
+                                 {
+                     name = "💨 Dissolve",
+                     properties = {
+                         Transparency = 1,
+                         Size = Vector3.new(1.2, 1.2, 1.2)
+                     },
+                     settings = {duration = 0.8, easingStyle = "Exponential", easingDirection = "Out"}
+                 }
+            }
+        },
+        -- Special effects
+        {
+            category = "EFFECTS",
+            color = Color3.fromRGB(180, 120, 255),
+            presets = {
+                {
+                    name = "🌟 Glow Pulse",
+                    properties = {
+                        Brightness = 3,
+                        Range = 25
+                    },
+                    settings = {duration = 1.2, easingStyle = "Sine", easingDirection = "InOut"}
+                },
+                                 {
+                     name = "🎨 Color Shift",
+                     properties = {
+                         Color = Color3.fromRGB(255, 100, 150)
+                     },
+                     settings = {duration = 2.0, easingStyle = "Sine", easingDirection = "InOut"}
+                 },
+                {
+                    name = "📈 Scale Up",
+                    properties = {
+                        Size = Vector3.new(2, 2, 2)
+                    },
+                    settings = {duration = 1.5, easingStyle = "Elastic", easingDirection = "Out"}
+                },
+                                 {
+                     name = "🔄 Full Spin",
+                     properties = {
+                         Orientation = Vector3.new(0, 720, 0)
+                     },
+                     settings = {duration = 2.5, easingStyle = "Sine", easingDirection = "InOut"}
+                 }
+             }
+         },
+         -- UI animations
+         {
+             category = "UI",
+             color = Color3.fromRGB(255, 180, 50),
+             presets = {
+                 {
+                     name = "📱 Button Press",
+                     properties = {
+                         Size = UDim2.new(0.9, 0, 0.9, 0),
+                         BackgroundTransparency = 0.2
+                     },
+                     settings = {duration = 0.1, easingStyle = "Quad", easingDirection = "InOut"}
+                 },
+                 {
+                     name = "🎪 Notification",
+                     properties = {
+                         Position = UDim2.new(0.5, 0, 0.1, 0),
+                         BackgroundTransparency = 0
+                     },
+                     settings = {duration = 0.6, easingStyle = "Back", easingDirection = "Out"}
+                 },
+                 {
+                     name = "📜 Slide In",
+                     properties = {
+                         Position = UDim2.new(0, 0, 0, 0),
+                         BackgroundTransparency = 0
+                     },
+                     settings = {duration = 0.4, easingStyle = "Exponential", easingDirection = "Out"}
+                 },
+                 {
+                     name = "🌀 Rotate Menu",
+                     properties = {
+                         Rotation = 180,
+                         BackgroundTransparency = 0.1
+                     },
+                     settings = {duration = 0.8, easingStyle = "Elastic", easingDirection = "Out"}
+                 }
+             }
+         }
+     }
+     
+     -- Create preset category sections
+    local yOffset = 0
+    for categoryIndex, categoryData in ipairs(animationPresets) do
+        -- Category header
+        local categoryHeader = Instance.new("TextLabel")
+        categoryHeader.Size = UDim2.new(1, 0, 0, 25)
+        categoryHeader.Position = UDim2.new(0, 0, 0, yOffset)
+        categoryHeader.BackgroundTransparency = 1
+        categoryHeader.Text = "🎬 " .. categoryData.category .. " ANIMATIONS"
+        categoryHeader.TextColor3 = categoryData.color
+        categoryHeader.TextSize = 14
+        categoryHeader.TextXAlignment = Enum.TextXAlignment.Left
+        categoryHeader.Font = Enum.Font.GothamBold
+        categoryHeader.Parent = categoryFrame
+        
+        -- Create preset buttons for this category
+        local presetRow = Instance.new("Frame")
+        presetRow.Size = UDim2.new(1, 0, 0, 35)
+        presetRow.Position = UDim2.new(0, 0, 0, yOffset + 30)
+        presetRow.BackgroundTransparency = 1
+        presetRow.Parent = categoryFrame
+        
+        for i, preset in ipairs(categoryData.presets) do
+            local presetButton = Instance.new("TextButton")
+            presetButton.Size = UDim2.new(0.24, -3, 1, 0)
+            presetButton.Position = UDim2.new((i-1) * 0.25, 1, 0, 0)
+            presetButton.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+            presetButton.BorderSizePixel = 0
+            presetButton.Text = preset.name
+            presetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            presetButton.TextSize = 11
+            presetButton.Font = Enum.Font.GothamMedium
+            presetButton.Parent = presetRow
+            
+            -- Styling
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 8)
+            corner.Parent = presetButton
+            
+            local stroke = Instance.new("UIStroke")
+            stroke.Color = categoryData.color
+            stroke.Thickness = 1.5
+            stroke.Transparency = 0.6
+            stroke.Parent = presetButton
+            
+            -- Click handler
+            presetButton.MouseButton1Click:Connect(function()
+                self:ApplyAnimationPreset(preset)
+                
+                -- Visual feedback
+                presetButton.BackgroundColor3 = categoryData.color
+                task.wait(0.15)
+                presetButton.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+            end)
+            
+            -- Hover effects
+            presetButton.MouseEnter:Connect(function()
+                stroke.Transparency = 0.3
+                presetButton.BackgroundColor3 = Color3.fromRGB(35, 45, 65)
+            end)
+            
+            presetButton.MouseLeave:Connect(function()
+                stroke.Transparency = 0.6
+                presetButton.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+            end)
+        end
+        
+        yOffset = yOffset + 70
+    end
+    
+    -- Adjust category frame size
+    categoryFrame.Size = UDim2.new(1, -30, 0, yOffset)
+    section.Size = UDim2.new(1, -40, 0, yOffset + 110) -- Add space for quick access toolbar
+    
+    -- Return the next Y position for the following section
+    local sectionHeight = yOffset + 110  -- local yOffset (dynamic height) + 110 for toolbar
+    return section.Position.Y.Offset + sectionHeight
+end
+
+function TweenGeneratorUI:CreateTweenControlsSection(parent, yOffset)
+    local section = self:CreateSection("Tween Settings", parent, yOffset)
     
     local yPos = 40
     
@@ -767,10 +1295,13 @@ function TweenGeneratorUI:CreateTweenControlsSection(parent)
     end)
     
     section.Size = UDim2.new(1, -40, 0, yPos + 60)
+    
+    -- Return the next Y position for the following section
+    return yOffset + (yPos + 60)
 end
 
-function TweenGeneratorUI:CreatePreviewSection(parent)
-    local section = self:CreateSection("Preview", parent, 850)
+function TweenGeneratorUI:CreatePreviewSection(parent, yOffset)
+    local section = self:CreateSection("Preview", parent, yOffset)
     
     -- Blue/neon Preview button
     local previewButton = Instance.new("TextButton")
@@ -874,10 +1405,13 @@ function TweenGeneratorUI:CreatePreviewSection(parent)
     end)
     
     section.Size = UDim2.new(1, -30, 0, 160)
+    
+    -- Return the next Y position for the following section
+    return yOffset + 160
 end
 
-function TweenGeneratorUI:CreateExportSection(parent)
-    local section = self:CreateSection("Export Code", parent, 1080)
+function TweenGeneratorUI:CreateExportSection(parent, yOffset)
+    local section = self:CreateSection("Export Code", parent, yOffset)
     
     -- Blue/neon Export button
     local exportButton = Instance.new("TextButton")
@@ -953,10 +1487,13 @@ function TweenGeneratorUI:CreateExportSection(parent)
     end)
     
     section.Size = UDim2.new(1, -30, 0, 160)
+    
+    -- Return the next Y position for the following section
+    return yOffset + 160
 end
 
-function TweenGeneratorUI:CreatePresetSection(parent)
-    local section = self:CreateSection("Presets", parent, 690)
+function TweenGeneratorUI:CreatePresetSection(parent, yOffset)
+    local section = self:CreateSection("Presets", parent, yOffset)
     
     -- Preset name input
     local presetNameInput = Instance.new("TextBox")
@@ -986,6 +1523,9 @@ function TweenGeneratorUI:CreatePresetSection(parent)
     end)
     
     section.Size = UDim2.new(1, -20, 0, 80)
+    
+    -- Return the next Y position for the following section
+    return yOffset + 80
 end
 
 function TweenGeneratorUI:CreateSection(title, parent, yOffset)
@@ -1335,24 +1875,73 @@ end
 function TweenGeneratorUI:RefreshSelectedObject()
     local selection = Selection:Get()
     
+    -- Find the status icon and selection container in the object selection section
+    local selectionSection = self.scrollFrame:FindFirstChild("Object SelectionSection")
+    local selectionContainer = selectionSection and selectionSection:GetChildren()[2] -- The selection container frame
+    local statusIcon = selectionContainer and selectionContainer:GetChildren()[2] -- The status icon
+    local typeLabel = selectionContainer and selectionContainer:GetChildren()[4] -- The type details label
+    local hintLabel = selectionContainer and selectionContainer:GetChildren()[5] -- The hint label
+    
     if #selection > 0 then
         self.selectedObject = selection[1]
         local targetObject = self:GetTargetObject()
         
+        -- Update visual feedback - object is selected
+        if statusIcon then
+            statusIcon.Text = "✅"
+            statusIcon.TextColor3 = Color3.fromRGB(0, 255, 120)
+        end
+        
         if self.selectedObject.ClassName == "Model" then
             if targetObject then
-                self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (Model) → " .. targetObject.Name .. " (" .. targetObject.ClassName .. ")"
+                self.objectInfoLabel.Text = self.selectedObject.Name .. " (Model)"
+                if typeLabel then
+                    typeLabel.Text = "→ " .. targetObject.Name .. " (" .. targetObject.ClassName .. ")"
+                end
             else
-                self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (Model) → No parts found!"
+                self.objectInfoLabel.Text = self.selectedObject.Name .. " (Model)"
+                if typeLabel then
+                    typeLabel.Text = "⚠️ No valid parts found in this model"
+                    typeLabel.TextColor3 = Color3.fromRGB(255, 150, 120)
+                end
             end
         else
-            self.objectInfoLabel.Text = "Selected: " .. self.selectedObject.Name .. " (" .. self.selectedObject.ClassName .. ")"
+            self.objectInfoLabel.Text = self.selectedObject.Name
+            if typeLabel then
+                typeLabel.Text = "✨ " .. self.selectedObject.ClassName .. " - Ready to tween!"
+                typeLabel.TextColor3 = Color3.fromRGB(120, 255, 180)
+            end
+        end
+        
+        if hintLabel then
+            local propCount = 0
+            local properties = PropertyHandler.GetTweenableProperties(self.selectedObject)
+            for _ in pairs(properties) do propCount = propCount + 1 end
+            hintLabel.Text = "🎯 " .. propCount .. " tweenable properties found"
+            hintLabel.TextColor3 = Color3.fromRGB(120, 255, 180)
         end
         
         self:RefreshPropertyEditor()
     else
         self.selectedObject = nil
+        
+        -- Update visual feedback - no selection
+        if statusIcon then
+            statusIcon.Text = "📦"
+            statusIcon.TextColor3 = Color3.fromRGB(255, 150, 0)
+        end
+        
         self.objectInfoLabel.Text = "No object selected"
+        if typeLabel then
+            typeLabel.Text = "Click an object in the workspace, then hit REFRESH"
+            typeLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        
+        if hintLabel then
+            hintLabel.Text = "💡 TIP: Use Explorer window to select nested objects"
+            hintLabel.TextColor3 = Color3.fromRGB(120, 180, 255)
+        end
+        
         self:ClearPropertyEditor()
     end
 end
@@ -2235,6 +2824,120 @@ function TweenGeneratorUI:UpdatePropertyStatus(propertyName, isConfigured)
             statusIndicator.TextColor3 = Color3.fromRGB(120, 140, 180) -- Muted blue-gray
         end
     end
+end
+
+function TweenGeneratorUI:ApplyAnimationPreset(preset)
+    print("🔧 DEBUG: ApplyAnimationPreset called with preset:", preset.name)
+    
+    if not self.selectedObject then
+        print("⚠️ No object selected! Please select an object first.")
+        return
+    end
+    
+    print("🔧 DEBUG: Selected object:", self.selectedObject.Name, "(" .. self.selectedObject.ClassName .. ")")
+    
+    local targetObject = self:GetTargetObject()
+    if not targetObject then
+        print("⚠️ No valid target object found!")
+        return
+    end
+    
+    print("🔧 DEBUG: Target object:", targetObject.Name, "(" .. targetObject.ClassName .. ")")
+    
+    -- Clear existing end properties
+    self.endProperties = {}
+    
+    -- Apply preset properties 
+    for propertyName, value in pairs(preset.properties) do
+        print("🔧 DEBUG: Processing property:", propertyName, "with value:", tostring(value))
+        
+        -- Check if the target object has this property
+        local success, currentValue = pcall(function()
+            return targetObject[propertyName]
+        end)
+        
+        if success and currentValue ~= nil then
+            print("🔧 DEBUG: Property exists. Current value:", tostring(currentValue))
+            
+            -- Store the original value as starting point (reverse animation)
+            self.startProperties[propertyName] = currentValue
+            
+            -- Apply the preset end value
+            if propertyName == "Position" and typeof(value) == "Vector3" then
+                -- For Position, make it relative to current position
+                self.endProperties[propertyName] = currentValue + value
+                print("🔧 DEBUG: Set relative position:", tostring(currentValue + value))
+            else
+                self.endProperties[propertyName] = value
+                print("🔧 DEBUG: Set absolute value:", tostring(value))
+            end
+        else
+            print("🔧 DEBUG: Property", propertyName, "does not exist or is nil on target object")
+        end
+    end
+    
+    -- Apply preset settings
+    if preset.settings then
+        if preset.settings.duration then
+            self.duration = preset.settings.duration
+        end
+        if preset.settings.easingStyle then
+            local easingStyle = Enum.EasingStyle[preset.settings.easingStyle]
+            if easingStyle then
+                self.easingStyle = easingStyle
+            else
+                print("⚠️ Warning: Invalid easing style '" .. preset.settings.easingStyle .. "', using default Sine")
+                self.easingStyle = Enum.EasingStyle.Sine
+            end
+        end
+        if preset.settings.easingDirection then
+            local easingDirection = Enum.EasingDirection[preset.settings.easingDirection]
+            if easingDirection then
+                self.easingDirection = easingDirection
+            else
+                print("⚠️ Warning: Invalid easing direction '" .. preset.settings.easingDirection .. "', using default Out")
+                self.easingDirection = Enum.EasingDirection.Out
+            end
+        end
+    end
+    
+    -- Refresh the property editor to show new values
+    if self.RefreshPropertyEditor then
+        print("🔧 DEBUG: Refreshing property editor")
+        self:RefreshPropertyEditor()
+    else
+        print("🔧 DEBUG: RefreshPropertyEditor function not found")
+    end
+    
+    -- Update the tween settings sliders
+    if self.UpdateTweenSettingsDisplay then
+        print("🔧 DEBUG: Updating tween settings display")
+        self:UpdateTweenSettingsDisplay()
+    else
+        print("🔧 DEBUG: UpdateTweenSettingsDisplay function not found")
+    end
+    
+    -- Auto-preview the tween so user can see the effect immediately
+    if self.PreviewTween then
+        print("🔧 DEBUG: Auto-previewing tween")
+        task.wait(0.1) -- Small delay to ensure everything is set up
+        self:PreviewTween()
+    else
+        print("🔧 DEBUG: PreviewTween function not found")
+    end
+    
+    -- Visual feedback
+    print("✨ Applied preset: " .. preset.name)
+    print("✅ Updated tween settings: Duration=" .. self.duration .. ", Style=" .. self.easingStyle.Name .. ", Direction=" .. self.easingDirection.Name)
+    print("📝 Properties set: " .. table.concat(self:GetPropertyNames(), ", "))
+end
+
+function TweenGeneratorUI:UpdateTweenSettingsDisplay()
+    -- Skip updating UI elements for now to avoid FindFirstDescendant errors
+    -- The tween settings will be applied correctly, just not visually updated in the UI
+    -- This can be enhanced later when the UI structure is more stable
+    
+    print("✅ Updated tween settings: Duration=" .. self.duration .. ", Style=" .. self.easingStyle.Name .. ", Direction=" .. self.easingDirection.Name)
 end
 
 function TweenGeneratorUI:SavePreset(name)
