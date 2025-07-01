@@ -890,12 +890,12 @@ function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
     quickLabel.Font = Enum.Font.GothamBold
     quickLabel.Parent = quickAccessFrame
     
-    -- Quick preset buttons (most popular)
+    -- Quick preset buttons (most popular) - Fixed for 3D objects
     local quickPresets = {
-        {name = "✨", preset = {name = "Fade In", properties = {Transparency = 1}, settings = {duration = 0.6, easingStyle = "Sine", easingDirection = "Out"}}},
+        {name = "✨", preset = {name = "Fade In", properties = {Transparency = 0}, settings = {duration = 0.6, easingStyle = "Sine", easingDirection = "Out"}}},
         {name = "💫", preset = {name = "Fade Out", properties = {Transparency = 1}, settings = {duration = 0.5, easingStyle = "Sine", easingDirection = "In"}}},
-        {name = "🎪", preset = {name = "Bounce In", properties = {Size = Vector3.new(0.1, 0.1, 0.1), Transparency = 1}, settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}}},
-        {name = "📏", preset = {name = "Scale In", properties = {Size = Vector3.new(0, 0, 0)}, settings = {duration = 0.5, easingStyle = "Back", easingDirection = "Out"}}},
+        {name = "🎪", preset = {name = "Bounce In", properties = {Size = Vector3.new(2, 2, 2)}, settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}}},
+        {name = "📏", preset = {name = "Scale Down", properties = {Size = Vector3.new(0.5, 0.5, 0.5)}, settings = {duration = 0.5, easingStyle = "Back", easingDirection = "Out"}}},
         {name = "🔄", preset = {name = "Spin", properties = {Orientation = Vector3.new(0, 360, 0)}, settings = {duration = 1.0, easingStyle = "Sine", easingDirection = "InOut"}}}
     }
     
@@ -954,22 +954,22 @@ function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
                 {
                     name = "🎪 Bounce In",
                     properties = {
-                        Size = Vector3.new(0.1, 0.1, 0.1),
-                        Transparency = 1
+                        Size = Vector3.new(1.5, 1.5, 1.5),
+                        Transparency = 0.2
                     },
                     settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}
                 },
                 {
                     name = "✨ Fade In",
                     properties = {
-                        Transparency = 1
+                        Transparency = 0
                     },
                     settings = {duration = 0.6, easingStyle = "Sine", easingDirection = "Out"}
                 },
                 {
-                    name = "📏 Scale In",
+                    name = "📏 Scale Up",
                     properties = {
-                        Size = Vector3.new(0, 0, 0)
+                        Size = Vector3.new(2, 2, 2)
                     },
                     settings = {duration = 0.5, easingStyle = "Back", easingDirection = "Out"}
                 },
@@ -998,7 +998,7 @@ function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
                 {
                     name = "🔻 Scale Down",
                     properties = {
-                        Size = Vector3.new(0, 0, 0)
+                        Size = Vector3.new(0.1, 0.1, 0.1)
                     },
                     settings = {duration = 0.4, easingStyle = "Back", easingDirection = "In"}
                 },
@@ -1033,13 +1033,13 @@ function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
                     },
                     settings = {duration = 1.2, easingStyle = "Sine", easingDirection = "InOut"}
                 },
-                                 {
-                     name = "🎨 Color Shift",
-                     properties = {
-                         Color = Color3.fromRGB(255, 100, 150)
-                     },
-                     settings = {duration = 2.0, easingStyle = "Sine", easingDirection = "InOut"}
-                 },
+                {
+                    name = "🎨 Color Shift",
+                    properties = {
+                        Color = Color3.fromRGB(255, 100, 150)
+                    },
+                    settings = {duration = 2.0, easingStyle = "Sine", easingDirection = "InOut"}
+                },
                 {
                     name = "📈 Scale Up",
                     properties = {
@@ -1047,53 +1047,50 @@ function TweenGeneratorUI:CreateEnhancedPresetsSection(parent, yOffset)
                     },
                     settings = {duration = 1.5, easingStyle = "Elastic", easingDirection = "Out"}
                 },
-                                 {
-                     name = "🔄 Full Spin",
-                     properties = {
-                         Orientation = Vector3.new(0, 720, 0)
-                     },
-                     settings = {duration = 2.5, easingStyle = "Sine", easingDirection = "InOut"}
-                 }
-             }
-         },
-         -- UI animations
-         {
-             category = "UI",
-             color = Color3.fromRGB(255, 180, 50),
-             presets = {
-                 {
-                     name = "📱 Button Press",
-                     properties = {
-                         Size = UDim2.new(0.9, 0, 0.9, 0),
-                         BackgroundTransparency = 0.2
-                     },
-                     settings = {duration = 0.1, easingStyle = "Quad", easingDirection = "InOut"}
-                 },
-                 {
-                     name = "🎪 Notification",
-                     properties = {
-                         Position = UDim2.new(0.5, 0, 0.1, 0),
-                         BackgroundTransparency = 0
-                     },
-                     settings = {duration = 0.6, easingStyle = "Back", easingDirection = "Out"}
-                 },
-                 {
-                     name = "📜 Slide In",
-                     properties = {
-                         Position = UDim2.new(0, 0, 0, 0),
-                         BackgroundTransparency = 0
-                     },
-                     settings = {duration = 0.4, easingStyle = "Exponential", easingDirection = "Out"}
-                 },
-                 {
-                     name = "🌀 Rotate Menu",
-                     properties = {
-                         Rotation = 180,
-                         BackgroundTransparency = 0.1
-                     },
-                     settings = {duration = 0.8, easingStyle = "Elastic", easingDirection = "Out"}
-                 }
-             }
+                {
+                    name = "🔄 Full Spin",
+                    properties = {
+                        Orientation = Vector3.new(0, 720, 0)
+                    },
+                    settings = {duration = 2.5, easingStyle = "Sine", easingDirection = "InOut"}
+                }
+            }
+        },
+        -- Movement & Position
+        {
+            category = "MOVEMENT",
+            color = Color3.fromRGB(255, 180, 50),
+            presets = {
+                {
+                    name = "⬆️ Float Up",
+                    properties = {
+                        Position = Vector3.new(0, 5, 0)
+                    },
+                    settings = {duration = 1.0, easingStyle = "Sine", easingDirection = "InOut"}
+                },
+                {
+                    name = "⬇️ Drop Down",
+                    properties = {
+                        Position = Vector3.new(0, -3, 0)
+                    },
+                    settings = {duration = 0.8, easingStyle = "Bounce", easingDirection = "Out"}
+                },
+                {
+                    name = "↩️ Slide Back",
+                    properties = {
+                        Position = Vector3.new(0, 0, -4)
+                    },
+                    settings = {duration = 0.6, easingStyle = "Back", easingDirection = "InOut"}
+                },
+                {
+                    name = "🌀 Wobble",
+                    properties = {
+                        Orientation = Vector3.new(15, 0, 0),
+                        Position = Vector3.new(0.5, 0, 0)
+                    },
+                    settings = {duration = 0.4, easingStyle = "Elastic", easingDirection = "Out"}
+                }
+            }
          }
      }
      
@@ -1766,12 +1763,13 @@ function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, cal
         end)
     end
     
-    -- Slider functionality
+    -- Fixed slider functionality using direct mouse events (works better in plugins)
     local dragging = false
-    local function updateValue(inputObject)
-        if not dragging then return end
-        
-        local relativeX = (inputObject.Position.X - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
+    local dragStartX = 0
+    local dragStartValue = defaultValue
+    
+    local function updateSliderFromMouseX(mouseX)
+        local relativeX = (mouseX - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
         relativeX = math.clamp(relativeX, 0, 1)
         
         local newValue = minValue + (maxValue - minValue) * relativeX
@@ -1781,15 +1779,39 @@ function TweenGeneratorUI:CreateNumberInput(parent, labelText, defaultValue, cal
         self:UpdateSlider(sliderHandle, sliderFill, valueDisplay, newValue, minValue, maxValue)
     end
     
-    sliderHandle.MouseButton1Down:Connect(function()
-        dragging = true
+    -- Handle clicking directly on track to jump to position
+    sliderTrack.InputBegan:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+            updateSliderFromMouseX(inputObject.Position.X)
+        end
     end)
     
-    game:GetService("UserInputService").InputChanged:Connect(updateValue)
+    -- Handle dragging the handle
+    sliderHandle.InputBegan:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStartX = inputObject.Position.X
+            local currentPercent = (tonumber(valueDisplay.Text) - minValue) / (maxValue - minValue)
+            dragStartValue = minValue + (maxValue - minValue) * currentPercent
+        end
+    end)
     
-    game:GetService("UserInputService").InputEnded:Connect(function(inputObject)
+    sliderHandle.InputChanged:Connect(function(inputObject)
+        if dragging and inputObject.UserInputType == Enum.UserInputType.MouseMovement then
+            updateSliderFromMouseX(inputObject.Position.X)
+        end
+    end)
+    
+    sliderHandle.InputEnded:Connect(function(inputObject)
         if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
+        end
+    end)
+    
+    -- Also handle mouse movements over the track when dragging
+    sliderTrack.InputChanged:Connect(function(inputObject)
+        if dragging and inputObject.UserInputType == Enum.UserInputType.MouseMovement then
+            updateSliderFromMouseX(inputObject.Position.X)
         end
     end)
     
@@ -1943,6 +1965,8 @@ function TweenGeneratorUI:RefreshSelectedObject()
         end
         
         self:ClearPropertyEditor()
+        -- Clear endProperties when no object is selected
+        self.endProperties = {}
     end
 end
 
@@ -1966,7 +1990,8 @@ function TweenGeneratorUI:ClearPropertyEditor()
     for _, child in pairs(self.propertyFrame:GetChildren()) do
         child:Destroy()
     end
-    self.endProperties = {}
+    -- DON'T clear endProperties here - presets set them and we don't want to lose them
+    -- self.endProperties = {}  -- REMOVED - this was clearing preset values!
 end
 
 function TweenGeneratorUI:CreatePropertyEditor(propertyName, propertyInfo, yPos)
@@ -2532,12 +2557,11 @@ function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propert
         displayCorner.CornerRadius = UDim.new(0, 6)
         displayCorner.Parent = valueDisplay
         
-        -- Slider functionality
+        -- Fixed slider functionality for property editors
         local dragging = false
-        local function updateSliderValue(inputObject)
-            if not dragging then return end
-            
-            local relativeX = (inputObject.Position.X - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
+        
+        local function updateSliderFromMouseX(mouseX)
+            local relativeX = (mouseX - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X
             relativeX = math.clamp(relativeX, 0, 1)
             
             local newValue = minValue + (maxValue - minValue) * relativeX
@@ -2553,15 +2577,36 @@ function TweenGeneratorUI:CreateNumberEditor(propertyName, currentValue, propert
             self:UpdatePropertyStatus(propertyName, true)
         end
         
-        sliderHandle.MouseButton1Down:Connect(function()
-            dragging = true
+        -- Handle clicking directly on track to jump to position
+        sliderTrack.InputBegan:Connect(function(inputObject)
+            if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+                updateSliderFromMouseX(inputObject.Position.X)
+            end
         end)
         
-        game:GetService("UserInputService").InputChanged:Connect(updateSliderValue)
+        -- Handle dragging the handle
+        sliderHandle.InputBegan:Connect(function(inputObject)
+            if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+            end
+        end)
         
-        game:GetService("UserInputService").InputEnded:Connect(function(inputObject)
+        sliderHandle.InputChanged:Connect(function(inputObject)
+            if dragging and inputObject.UserInputType == Enum.UserInputType.MouseMovement then
+                updateSliderFromMouseX(inputObject.Position.X)
+            end
+        end)
+        
+        sliderHandle.InputEnded:Connect(function(inputObject)
             if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
                 dragging = false
+            end
+        end)
+        
+        -- Also handle mouse movements over the track when dragging
+        sliderTrack.InputChanged:Connect(function(inputObject)
+            if dragging and inputObject.UserInputType == Enum.UserInputType.MouseMovement then
+                updateSliderFromMouseX(inputObject.Position.X)
             end
         end)
         
@@ -2807,9 +2852,19 @@ end
 
 function TweenGeneratorUI:GetPropertyNames()
     local names = {}
-    for propertyName, _ in pairs(self.endProperties or {}) do
+    if not self.endProperties then
+        print("🔧 DEBUG: GetPropertyNames - endProperties is nil")
+        return names
+    end
+    
+    for propertyName, _ in pairs(self.endProperties) do
         table.insert(names, propertyName)
     end
+    
+    if #names == 0 then
+        print("🔧 DEBUG: GetPropertyNames - No properties found in endProperties")
+    end
+    
     return names
 end
 
@@ -2827,14 +2882,10 @@ function TweenGeneratorUI:UpdatePropertyStatus(propertyName, isConfigured)
 end
 
 function TweenGeneratorUI:ApplyAnimationPreset(preset)
-    print("🔧 DEBUG: ApplyAnimationPreset called with preset:", preset.name)
-    
     if not self.selectedObject then
         print("⚠️ No object selected! Please select an object first.")
         return
     end
-    
-    print("🔧 DEBUG: Selected object:", self.selectedObject.Name, "(" .. self.selectedObject.ClassName .. ")")
     
     local targetObject = self:GetTargetObject()
     if not targetObject then
@@ -2842,23 +2893,17 @@ function TweenGeneratorUI:ApplyAnimationPreset(preset)
         return
     end
     
-    print("🔧 DEBUG: Target object:", targetObject.Name, "(" .. targetObject.ClassName .. ")")
-    
     -- Clear existing end properties
     self.endProperties = {}
     
     -- Apply preset properties 
     for propertyName, value in pairs(preset.properties) do
-        print("🔧 DEBUG: Processing property:", propertyName, "with value:", tostring(value))
-        
         -- Check if the target object has this property
         local success, currentValue = pcall(function()
             return targetObject[propertyName]
         end)
         
         if success and currentValue ~= nil then
-            print("🔧 DEBUG: Property exists. Current value:", tostring(currentValue))
-            
             -- Store the original value as starting point (reverse animation)
             self.startProperties[propertyName] = currentValue
             
@@ -2866,13 +2911,9 @@ function TweenGeneratorUI:ApplyAnimationPreset(preset)
             if propertyName == "Position" and typeof(value) == "Vector3" then
                 -- For Position, make it relative to current position
                 self.endProperties[propertyName] = currentValue + value
-                print("🔧 DEBUG: Set relative position:", tostring(currentValue + value))
             else
                 self.endProperties[propertyName] = value
-                print("🔧 DEBUG: Set absolute value:", tostring(value))
             end
-        else
-            print("🔧 DEBUG: Property", propertyName, "does not exist or is nil on target object")
         end
     end
     
@@ -2903,33 +2944,29 @@ function TweenGeneratorUI:ApplyAnimationPreset(preset)
     
     -- Refresh the property editor to show new values
     if self.RefreshPropertyEditor then
-        print("🔧 DEBUG: Refreshing property editor")
         self:RefreshPropertyEditor()
-    else
-        print("🔧 DEBUG: RefreshPropertyEditor function not found")
     end
     
     -- Update the tween settings sliders
     if self.UpdateTweenSettingsDisplay then
-        print("🔧 DEBUG: Updating tween settings display")
         self:UpdateTweenSettingsDisplay()
-    else
-        print("🔧 DEBUG: UpdateTweenSettingsDisplay function not found")
     end
     
     -- Auto-preview the tween so user can see the effect immediately
     if self.PreviewTween then
-        print("🔧 DEBUG: Auto-previewing tween")
-        task.wait(0.1) -- Small delay to ensure everything is set up
-        self:PreviewTween()
-    else
-        print("🔧 DEBUG: PreviewTween function not found")
+        -- Use spawn/coroutine to avoid blocking
+        task.spawn(function()
+            task.wait(0.05) -- Smaller delay to ensure everything is set up
+            self:PreviewTween()
+        end)
     end
     
     -- Visual feedback
     print("✨ Applied preset: " .. preset.name)
     print("✅ Updated tween settings: Duration=" .. self.duration .. ", Style=" .. self.easingStyle.Name .. ", Direction=" .. self.easingDirection.Name)
-    print("📝 Properties set: " .. table.concat(self:GetPropertyNames(), ", "))
+    local propertyNames = self:GetPropertyNames()
+    local propCount = #propertyNames
+    print("📝 Properties set (" .. propCount .. "): " .. table.concat(propertyNames, ", "))
 end
 
 function TweenGeneratorUI:UpdateTweenSettingsDisplay()
